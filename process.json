@@ -1,0 +1,24 @@
+{
+    "apps": [
+        {
+            "name": "elamachain",
+            "script": "app.js",
+            "instances": "max",
+            "exec_mode": "cluster",
+            "env": {
+                "PORT": 4000,
+                "NODE_ENV": "development",
+                "admin_name": "elamachain",
+                "admin_email": "admin@elamachain.io",
+                "admin_pwd": "admin#123$%"
+            },
+            "env_production": {
+                "PORT": 4000,
+                "admin_name": "elamachain",
+                "admin_email": "admin@elamachain.io",
+                "admin_pwd": "admin#123$%",
+                "NODE_ENV": "development"
+            }
+        }
+    ]
+}
