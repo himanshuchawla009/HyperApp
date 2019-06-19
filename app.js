@@ -27,6 +27,9 @@ var expressJWT = require('express-jwt');
 var jwt = require('jsonwebtoken');
 var bearerToken = require('express-bearer-token');
 var cors = require('cors');
+const passport = require('passport');
+const controller = require('./controllers/appController'),
+mongoose = require('mongoose');
 
 require('./config.js');
 var hfc = require('fabric-client');
@@ -52,40 +55,67 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
 	extended: false
 }));
-// set secret variable
-app.set('secret', 'thisismysecret');
-app.use(expressJWT({
-	secret: 'thisismysecret'
-}).unless({
-	path: ['/users']
-}));
-app.use(bearerToken());
-app.use(function(req, res, next) {
-	logger.debug(' ------>>>>>> new request for %s',req.originalUrl);
-	if (req.originalUrl.indexOf('/users') >= 0) {
-		return next();
-	}
 
-	var token = req.token;
-	jwt.verify(token, app.get('secret'), function(err, decoded) {
-		if (err) {
-			res.send({
-				success: false,
-				message: 'Failed to authenticate token. Make sure to include the ' +
-					'token returned from /users call in the authorization header ' +
-					' as a Bearer token'
-			});
-			return;
-		} else {
-			// add the decoded user name and org name to the request object
-			// for the downstream code to use
-			req.username = decoded.username;
-			req.orgname = decoded.orgName;
-			logger.debug(util.format('Decoded from JWT token: username - %s, orgname - %s', decoded.username, decoded.orgName));
-			return next();
-		}
-	});
+
+// set up passport
+app.use(passport.initialize());
+require('./auth/passport')(passport);
+
+// set secret variable
+// app.set('secret', 'thisismysecret');
+// app.use(expressJWT({
+// 	secret: 'thisismysecret'
+// }).unless({
+// 	path: ['/users']
+// }));
+app.use(bearerToken());
+
+
+mongoose.connect("mongodb://localhost:27017/elama", {
+    auto_reconnect: true,
+    socketOptions: {
+        keepAlive: 500,
+        connectTimeoutMS: 90000,
+        socketTimeoutMS: 90000
+    },
+    connectWithNoPrimary: true,
+    useNewUrlParser: true
+}, (err) => {
+    if (err) {
+        logger.info('❌ ' + 'Mongodb Connection Error');
+        logger.error(err);
+    } else {
+        logger.info('✅ ' + 'Mongodb Connected');
+
+    }
 });
+
+// app.use(function(req, res, next) {
+// 	logger.debug(' ------>>>>>> new request for %s',req.originalUrl);
+// 	if (req.originalUrl.indexOf('/users') >= 0) {
+// 		return next();
+// 	}
+
+// 	var token = req.token;
+// 	jwt.verify(token, app.get('secret'), function(err, decoded) {
+// 		if (err) {
+// 			res.send({
+// 				success: false,
+// 				message: 'Failed to authenticate token. Make sure to include the ' +
+// 					'token returned from /users call in the authorization header ' +
+// 					' as a Bearer token'
+// 			});
+// 			return;
+// 		} else {
+// 			// add the decoded user name and org name to the request object
+// 			// for the downstream code to use
+// 			req.username = decoded.username;
+// 			req.orgname = decoded.orgName;
+// 			logger.debug(util.format('Decoded from JWT token: username - %s, orgname - %s', decoded.username, decoded.orgName));
+// 			return next();
+// 		}
+// 	});
+// });
 
 ///////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// START SERVER /////////////////////////////////
@@ -428,3 +458,36 @@ app.get('/channels', async function(req, res) {
 	let message = await query.getChannels(peer, req.username, req.orgname);
 	res.send(message);
 });
+
+
+//user signup route
+app.post('/user/signup',
+	passport.authenticate('user-local-signup', { session: false }),
+	controller.userSignup,
+);
+
+
+
+// //user login route
+app.post('/user/login',
+	passport.authenticate('user-local-login', { session: false }),
+	controller.userLogin,
+);
+
+// //admin login route
+app.post('/admin/login',
+	passport.authenticate('user-local-login', { session: false }),
+	controller.adminLogin,
+);
+
+// //adding user in any org
+// app.post('/admin/org/addUser',
+//   authenticate,
+// 	controller.handleAddOrg,
+// );
+
+// //loading default user from org
+// app.post('/admin/org/loadUser',
+//     authenticate,
+// 	controller.handleAddOrg,
+// );
