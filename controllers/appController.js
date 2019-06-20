@@ -557,6 +557,15 @@ dao.createAccount = async(req,res,next)=>{
         var username;
         var orgName;
 
+
+        if(req.user.loginType === 'admin') {
+            username= appConfig.org1User;
+            orgName = appConfig.org1Name;
+        } else {
+
+            username= req.user.username;
+            orgName = req.user.orgName;
+        }
         if (!pincode) {
             res.json(getErrorMessage('\'pincode\''));
             return;
@@ -619,14 +628,6 @@ dao.createAccount = async(req,res,next)=>{
 
        
 
-        if(req.user.loginType === 'admin') {
-            username= appConfig.org1User;
-            orgName = appConfig.org1Name;
-        } else {
-
-            username= req.user.username;
-            orgName = req.user.orgName;
-        }
 
         logger.debug("login type:" + req.user.loginType);
         logger.debug('channelName  : ' + channelName);
@@ -654,14 +655,53 @@ dao.createAccount = async(req,res,next)=>{
 dao.sendPayment = async(req,res,next)=>{
     try {
 
-        let { pin,amount, toAddress } = req.body;
-    //    let tx = sendCoins()
+        let { pincode,amount, toAddress } = req.body;
+    
+        let fcn = "Transaction"
+        var peers = ["peer0.org1.example.com", "peer0.org2.example.com"];
+        var chaincodeName = appConfig.chaincodeName;
+        var channelName = appConfig.channelName;
+     
+        var username;
+        var orgName;
+
+
+        if(req.user.loginType === 'admin') {
+            username= appConfig.org1User;
+            orgName = appConfig.org1Name;
+        } else {
+
+            username= req.user.username;
+            orgName = req.user.orgName;
+        }
+        if (!pincode) {
+            res.json(getErrorMessage('\'pincode\''));
+            return;
+        }
         
+        if(req.user.wallet === false) {
+            res.status(200).json({
+                success: false,
+                message: "Please create a wallet before making transaction"
+            });
+        }
+
+    
+        let tx = sendCoins(req.user.cipherString,pincode,amount,toAddress);
+
+        console.log("transaction",tx);
+        let args = [tx];
+
+    
+
+        let result = await invoke.invokeChaincode(peers, channelName, chaincodeName, fcn, args, username, orgName);
+
+        // if(result.success) {
+        //     let existingUser = await User.findOneAndUpdate({_id:req.user._id},{wallet:true,walletAddress:address,cipherString:cipherString});
+        // }
+        res.status(200).json(result)
     } catch (error) {
-        res.status(200).json({
-            success: false,
-            message: error
-        });
+        throw error;
     }
 }
 
@@ -674,5 +714,30 @@ sendCoins = async(cipherString,pin,amount,toAddress)=>{
         throw error;
     }
 
+}
+
+dao.getConfiguration = async(req,res,next)=>{
+    try {
+
+        console.log("hey")
+
+        let result = {
+            orgOne: !!localStorage.getItem("orgOne") ? true : false,
+            orgTwo: !!localStorage.getItem("orgTwo") ? true : false,
+            chaincodeOrgOne: !!localStorage.getItem("chaincodeOrgOne") ? true : false,
+            chaincodeOrgTwo: !!localStorage.getItem("chaincodeOrgTwo") ? true : false,
+            joinOrgOne: !!localStorage.getItem("joinOrgOne") ? true : false,
+            joinOrgTwo:  !!localStorage.getItem("joinOrgTwo") ? true : false,
+            instantiate: !!localStorage.getItem("instantiate") ? true : false,
+            channel:  !!localStorage.getItem("channel") ? true : false,
+
+        }
+
+
+        res.status(200).json(result);
+        
+    } catch (error) {
+        throw error;
+    }
 }
 module.exports = dao;

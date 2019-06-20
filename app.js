@@ -507,6 +507,7 @@ app.post('/admin/instantiateChaincode',
   controller.instantiateChaincode,
 );
 
+
 app.post('/user/invokeChainCode',
   authenticate,
   controller.invokeTransaction,
@@ -521,6 +522,16 @@ app.post('/user/createAccount',
   authenticate,
   controller.createAccount,
 );
+app.post('/user/sendPayment',
+  authenticate,
+  controller.sendPayment,
+);
+
+app.get('/admin/configuration',
+  authenticate,
+  controller.getConfiguration,
+);
+
 
 // //loading default user from org
 // app.post('/admin/org/loadUser',
