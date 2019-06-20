@@ -56,7 +56,7 @@ function getPrivateKeyAsCrypto(privkeyPemString, pin) {
 
 function getCryptoAsPrivateKey(key_cipher, pin) {
   const hash = new sha3.SHA3(256);
-  hash.update( );
+  hash.update(pin);
 
   const sha3Pin = hash.digest('hex');
   const key = md5(sha3Pin);

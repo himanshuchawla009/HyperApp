@@ -687,7 +687,7 @@ dao.sendPayment = async(req,res,next)=>{
         }
 
     
-        let tx = sendCoins(req.user.cipherString,pincode,amount,toAddress);
+        let tx = await sendCoins(req.user.cipherString,pincode,amount,toAddress);
 
         console.log("transaction",tx);
         let args = [tx];
@@ -707,8 +707,8 @@ dao.sendPayment = async(req,res,next)=>{
 
 sendCoins = async(cipherString,pin,amount,toAddress)=>{
     try {
-        let ecdsaKey = wallet.getCryptoAsPrivateKey(cipherString,pin);
-        let tx = wallet.makeTransaction(ecdsaKey,amount,toAddress);
+        let ecdsaKey =await wallet.getCryptoAsPrivateKey(cipherString,pin);
+        let tx =await wallet.makeTransaction(ecdsaKey,amount,toAddress);
         return tx;
     } catch (error) {
         throw error;
