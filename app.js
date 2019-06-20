@@ -527,10 +527,31 @@ app.post('/user/sendPayment',
   controller.sendPayment,
 );
 
+app.post('/admin/createAdminAccount',
+  authenticate,
+  controller.createAdminAccount,
+);
+
+
 app.get('/admin/configuration',
   authenticate,
   controller.getConfiguration,
 );
+
+
+
+app.post('/admin/mintTokens',
+  authenticate,
+  controller.mintTokens,
+);
+
+
+app.post('/admin/sendToUser',
+  authenticate,
+  controller.exchangeTransaction,
+);
+
+
 
 
 // //loading default user from org

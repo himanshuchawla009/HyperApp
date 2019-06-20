@@ -1,6 +1,7 @@
 const elliptic = require('elliptic').ec;
-
 const EC = new elliptic('secp256k1');
+
+var path = require('path');
 const KeyEncoder = require('key-encoder');
 const crypto = require('crypto');
 const sha256 = require('sha256');
@@ -9,18 +10,22 @@ const md5 = require('md5');
 const base64 = require('base-64');
 const ECKey = require('ec-key');
 const JsCryptoKeyUtils = require('js-crypto-key-utils');
+const pki = require('node-forge').pki
+var fs = require('fs');
 
-
+var sys = require('sys')
+var spawn = require('child_process').spawn;
+var shell = require("shelljs");
 async function getPrivatekeyAsPem(key) {
-    console.log("converting private key to pem")
+  console.log("converting private key to pem")
   const encoder = new KeyEncoder('secp256k1');
-  console.log("encoded loaded",key)
+  console.log("encoded loaded", key)
   const privateKeyHex = key.priv.toString(16);
-  console.log("private key hex",privateKeyHex);
+  console.log("private key hex", privateKeyHex);
   const pem = encoder.encodePrivate(privateKeyHex, 'raw', 'pem');
-  console.log("encoded private key",pem);
+  console.log("encoded private key", pem);
   const convertPem = await convertPrivateKeyPkcs8(pem);
-  console.log("converted key",convertPem)
+  console.log("converted key", convertPem)
   return convertPem;
 }
 
@@ -30,18 +35,20 @@ function getPublickeyAsPem(key) {
     const encoder = new KeyEncoder('secp256k1');
     console.log("encoder loaded")
     const rawPublicKey = key.getPublic('hex');
-    console.log("raw public key",rawPublicKey)
+    console.log("raw public key", rawPublicKey)
     let encoded = encoder.encodePublic(rawPublicKey, 'raw', 'pem');
-    console.log(encoded,"encoded");
+    console.log(encoded, "encoded");
     return encoded
   } catch (error) {
-      throw error;
+    throw error;
   }
 }
 
 function getPrivateKeyAsCrypto(privkeyPemString, pin) {
+
   const hash = new sha3.SHA3(256);
   hash.update(pin);
+
 
   const sha3Pin = hash.digest('hex');
   const key = md5(sha3Pin);
@@ -72,12 +79,12 @@ function getCryptoAsPrivateKey(key_cipher, pin) {
     return result;
   }
 
-  return result;
+
 }
 
 function getWallet(key) {
   const pubPem = getPublickeyAsPem(key);
-  console.log("public pem",pubPem)
+  console.log("public pem", pubPem)
   const pubKey = new ECKey(pubPem, 'pem');
   const merged = Buffer.concat([pubKey.x, pubKey.y]);
   return sha256(merged);
@@ -85,7 +92,7 @@ function getWallet(key) {
 
 
 function genKey() {
-  let key= EC.genKeyPair();
+  let key = EC.genKeyPair();
   key.getPublic()
 
   return key;
@@ -105,7 +112,7 @@ function makeTransaction(key, amount, toaddr) {
   rq = JSON.stringify(rq);
   const rq64 = base64.encode(rq);
   const signed = key.sign(sha256(rq64)).toDER('hex');
-  return `${rq64}.IAMCOIN.${signed}`;
+  return `${rq64}.ELAMA.${signed}`;
 }
 
 function createAccount(key, delimiter) {
@@ -129,9 +136,60 @@ function createAccount(key, delimiter) {
 
 function getKeyFromPrivatePem(pem_str) {
   const pk = new ECKey(pem_str, 'pem');
+  console.log("pri k", pk.d)
   return EC.keyFromPrivate(pk.d, 'hex');
 }
 
+
+
+ function createMintAccountTx() {
+
+  try {
+    let  { stdout, stderr, code }  =shell.exec(`shopt -s expand_aliases; create`,
+      { shell: '/bin/bash',silent:true });
+
+      console.log(stdout)
+      return stdout
+
+  } catch (error) {
+    console.log(error)
+  }
+
+}
+
+ function exchangeTx(amount, address) {
+
+  try {
+    let  { stdout, stderr, code }  = shell.exec(`shopt -s expand_aliases; exchange ${amount} ${address}`,
+      { shell: '/bin/bash'});
+      console.log(stdout)
+      return stdout
+  } catch (error) {
+
+    console.log(error)
+  }
+
+}
+
+ function mintTx(amount) {
+
+  try {
+    let  { stdout, stderr, code } =shell.exec(`shopt -s expand_aliases; mint ${amount}`,
+      { shell: '/bin/bash' });
+      console.log(stdout)
+      return stdout
+  } catch (error) {
+    console.log(error)
+  }
+
+}
+
+
+function getAdminKeyFromPrivatePem(pem) {
+
+  privateKey = pki.privateKeyFromPem(pem)
+  console.log(privateKey, "private key")
+}
 const convertPrivateKeyPkcs8 = async (privateKeyPemString) => {
   const privateKey = new ECKey(privateKeyPemString, 'pem');
   let jwk = JSON.stringify(privateKey, null, 2);
@@ -139,6 +197,9 @@ const convertPrivateKeyPkcs8 = async (privateKeyPemString) => {
   const convertKey = await new JsCryptoKeyUtils.Key('jwk', jwk).export('pem');
   return convertKey;
 };
+
+createMintAccountTx();
+
 
 
 module.exports.getPrivatekeyAsPem = getPrivatekeyAsPem;
@@ -151,3 +212,8 @@ module.exports.getKeyFromPrivatePem = getKeyFromPrivatePem;
 module.exports.getPrivateKeyAsCrypto = getPrivateKeyAsCrypto;
 module.exports.getCryptoAsPrivateKey = getCryptoAsPrivateKey;
 module.exports.convertPrivateKeyPkcs8 = convertPrivateKeyPkcs8;
+module.exports.getAdminKeyFromPrivatePem = getAdminKeyFromPrivatePem;
+
+module.exports.createMintAccountTx = createMintAccountTx;
+module.exports.mintTx= mintTx;
+module.exports.exchangeTx= exchangeTx;

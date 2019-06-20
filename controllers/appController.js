@@ -7,7 +7,9 @@ var appConfig = require('../appConfig');
 const User = require('../models/user');
 var app = express();
 var jwt = require('jsonwebtoken');
+var fs = require('fs');
 
+var path = require('path');
 var hfc = require('fabric-client');
 
 var helper = require('../app/helper.js');
@@ -215,7 +217,17 @@ dao.addOrgUser = async (req, res, next) => {
 
             response.success = true;
 
-            res.status(200).json(response);
+            res.status(200).json({
+                ...response,
+                orgOne: !!localStorage.getItem("orgOne") ? true : false,
+                orgTwo: !!localStorage.getItem("orgTwo") ? true : false,
+                chaincodeOrgOne: !!localStorage.getItem("chaincodeOrgOne") ? true : false,
+                chaincodeOrgTwo: !!localStorage.getItem("chaincodeOrgTwo") ? true : false,
+                joinOrgOne: !!localStorage.getItem("joinOrgOne") ? true : false,
+                joinOrgTwo:  !!localStorage.getItem("joinOrgTwo") ? true : false,
+                instantiate: !!localStorage.getItem("instantiate") ? true : false,
+                channel:  !!localStorage.getItem("channel") ? true : false,
+            });
         } else {
             logger.debug('Failed to register the username %s for organization %s with::%s', username, orgName, response);
             res.json({ success: false, message: response });
@@ -251,7 +263,15 @@ dao.addChannel = async (req, res, next) => {
             }
             res.status(200).json({
                 success: true,
-                message:result.message
+                message:result.message,
+                orgOne: !!localStorage.getItem("orgOne") ? true : false,
+                orgTwo: !!localStorage.getItem("orgTwo") ? true : false,
+                chaincodeOrgOne: !!localStorage.getItem("chaincodeOrgOne") ? true : false,
+                chaincodeOrgTwo: !!localStorage.getItem("chaincodeOrgTwo") ? true : false,
+                joinOrgOne: !!localStorage.getItem("joinOrgOne") ? true : false,
+                joinOrgTwo:  !!localStorage.getItem("joinOrgTwo") ? true : false,
+                instantiate: !!localStorage.getItem("instantiate") ? true : false,
+                channel:  !!localStorage.getItem("channel") ? true : false,
             });
         }
     } catch (error) {   
@@ -327,7 +347,17 @@ dao.joinChannel = async (req, res, next) => {
             localStorage.setItem("joinOrgTwo", true)
         }
 
-        res.status(200).json(result);
+        res.status(200).json({
+            ...result,
+            orgOne: !!localStorage.getItem("orgOne") ? true : false,
+            orgTwo: !!localStorage.getItem("orgTwo") ? true : false,
+            chaincodeOrgOne: !!localStorage.getItem("chaincodeOrgOne") ? true : false,
+            chaincodeOrgTwo: !!localStorage.getItem("chaincodeOrgTwo") ? true : false,
+            joinOrgOne: !!localStorage.getItem("joinOrgOne") ? true : false,
+            joinOrgTwo:  !!localStorage.getItem("joinOrgTwo") ? true : false,
+            instantiate: !!localStorage.getItem("instantiate") ? true : false,
+            channel:  !!localStorage.getItem("channel") ? true : false,
+        });
 
     } catch (error) {
        throw error;
@@ -408,7 +438,17 @@ dao.installChaincode = async (req, res, next) => {
             localStorage.setItem("chaincodeOrgTwo", true)
         }
 
-        res.status(200).json(result);
+        res.status(200).json({
+            ...result,
+            orgOne: !!localStorage.getItem("orgOne") ? true : false,
+            orgTwo: !!localStorage.getItem("orgTwo") ? true : false,
+            chaincodeOrgOne: !!localStorage.getItem("chaincodeOrgOne") ? true : false,
+            chaincodeOrgTwo: !!localStorage.getItem("chaincodeOrgTwo") ? true : false,
+            joinOrgOne: !!localStorage.getItem("joinOrgOne") ? true : false,
+            joinOrgTwo:  !!localStorage.getItem("joinOrgTwo") ? true : false,
+            instantiate: !!localStorage.getItem("instantiate") ? true : false,
+            channel:  !!localStorage.getItem("channel") ? true : false,
+        });
 
     } catch (error) {
        
@@ -447,7 +487,17 @@ dao.instantiateChaincode = async (req, res, next) => {
                 localStorage.setItem("instantiate", true)
             }
 
-            res.status(200).json(result);
+            res.status(200).json({
+                ...result,
+                orgOne: !!localStorage.getItem("orgOne") ? true : false,
+                orgTwo: !!localStorage.getItem("orgTwo") ? true : false,
+                chaincodeOrgOne: !!localStorage.getItem("chaincodeOrgOne") ? true : false,
+                chaincodeOrgTwo: !!localStorage.getItem("chaincodeOrgTwo") ? true : false,
+                joinOrgOne: !!localStorage.getItem("joinOrgOne") ? true : false,
+                joinOrgTwo:  !!localStorage.getItem("joinOrgTwo") ? true : false,
+                instantiate: !!localStorage.getItem("instantiate") ? true : false,
+                channel:  !!localStorage.getItem("channel") ? true : false,
+            });
         }
     } catch (error) {
         res.status(200).json({
@@ -707,8 +757,15 @@ dao.sendPayment = async(req,res,next)=>{
 
 sendCoins = async(cipherString,pin,amount,toAddress)=>{
     try {
-        let ecdsaKey =await wallet.getCryptoAsPrivateKey(cipherString,pin);
-        let tx =await wallet.makeTransaction(ecdsaKey,amount,toAddress);
+        console.log(cipherString,"cipher",pin)
+        let privatePem = await wallet.getCryptoAsPrivateKey(cipherString,pin);
+        console.log("ecdsaKey",privatePem);
+
+        let ecdsaKey = await wallet.getKeyFromPrivatePem(privatePem);
+        console.log(ecdsaKey,"ecdsa key")
+
+        let tx = await wallet.makeTransaction(ecdsaKey,amount,toAddress);
+        console.log("txn",tx)
         return tx;
     } catch (error) {
         throw error;
@@ -738,6 +795,169 @@ dao.getConfiguration = async(req,res,next)=>{
         
     } catch (error) {
         throw error;
+    }
+}
+
+
+dao.createAdminAccount = async(req,res,next)=>{
+    try {
+        let pincode = req.body.pincode;
+        let fcn = "WriteAccount"
+        var peers = ["peer0.org1.example.com", "peer0.org2.example.com"];
+        var chaincodeName = appConfig.chaincodeName;
+        var channelName = appConfig.channelName;
+     
+        var username;
+        var orgName;
+
+
+        if(req.user.loginType === 'admin') {
+            username= appConfig.org1User;
+            orgName = appConfig.org1Name;
+        } else {
+
+            username= req.user.username;
+            orgName = req.user.orgName;
+        }
+       
+    
+        
+       
+        let json_hash =  wallet.createMintAccountTx();
+        console.log("json_has",json_hash)
+        let trimmedHash =  json_hash.replace(/\r?\n|\r/g, " ");
+        let args = [trimmedHash.trim()];
+
+        console.log(args,"args")
+       
+        logger.debug("login type:" + req.user.loginType);
+        logger.debug('channelName  : ' + channelName);
+        logger.debug('chaincodeName : ' + chaincodeName);
+        logger.debug('fcn  : ' + fcn);
+        logger.debug('args  : ' + args);
+        logger.debug('username  : ' + username);
+        logger.debug('orgname  : ' + orgName);
+
+        let result = await invoke.invokeChaincode(peers, channelName, chaincodeName, fcn, args, username, orgName);
+
+        
+        res.status(200).json(result)
+
+    } catch (error) {
+        res.status(200).json({
+            success: false,
+            error: error
+        });
+    }
+}
+
+
+
+dao.mintTokens = async(req,res,next)=>{
+    try {
+        let pincode = req.body.pincode;
+        let amount = req.body.amount;
+      
+        let fcn = "Mint"
+        var peers = ["peer0.org1.example.com", "peer0.org2.example.com"];
+        var chaincodeName = appConfig.chaincodeName;
+        var channelName = appConfig.channelName;
+     
+        var username;
+        var orgName;
+
+
+        if(req.user.loginType === 'admin') {
+            username= appConfig.org1User;
+            orgName = appConfig.org1Name;
+        } else {
+
+            username= req.user.username;
+            orgName = req.user.orgName;
+        }
+       
+    
+        
+       
+        let json_hash =  wallet.mintTx(amount);
+        console.log("json_has",json_hash)
+        let trimmedHash =  json_hash.replace(/\r?\n|\r/g, " ");
+        let args = [trimmedHash.trim()];
+       
+
+
+        logger.debug("login type:" + req.user.loginType);
+        logger.debug('channelName  : ' + channelName);
+        logger.debug('chaincodeName : ' + chaincodeName);
+        logger.debug('fcn  : ' + fcn);
+        logger.debug('args  : ' + args);
+        logger.debug('username  : ' + username);
+        logger.debug('orgname  : ' + orgName);
+
+        let result = await invoke.invokeChaincode(peers, channelName, chaincodeName, fcn, args, username, orgName);
+
+        
+        res.status(200).json(result)
+
+    } catch (error) {
+        res.status(200).json({
+            success: false,
+            error: error
+        });
+    }
+}
+
+
+dao.exchangeTransaction = async(req,res,next)=>{
+    try {
+        let pincode = req.body.pincode;
+        let amount = req.body.amount;
+        let address = req.body.toAddress;
+        let fcn = "Exchange"
+        var peers = ["peer0.org1.example.com", "peer0.org2.example.com"];
+        var chaincodeName = appConfig.chaincodeName;
+        var channelName = appConfig.channelName;
+     
+        var username;
+        var orgName;
+
+
+        if(req.user.loginType === 'admin') {
+            username= appConfig.org1User;
+            orgName = appConfig.org1Name;
+        } else {
+
+            username= req.user.username;
+            orgName = req.user.orgName;
+        }
+       
+    
+        
+       
+        let json_hash =  wallet.exchangeTx(amount,address);
+        console.log("json_has",json_hash)
+        let trimmedHash =  json_hash.replace(/\r?\n|\r/g, " ");
+        let args = [trimmedHash.trim()];
+       
+     
+        logger.debug("login type:" + req.user.loginType);
+        logger.debug('channelName  : ' + channelName);
+        logger.debug('chaincodeName : ' + chaincodeName);
+        logger.debug('fcn  : ' + fcn);
+        logger.debug('args  : ' + args);
+        logger.debug('username  : ' + username);
+        logger.debug('orgname  : ' + orgName);
+
+        let result = await invoke.invokeChaincode(peers, channelName, chaincodeName, fcn, args, username, orgName);
+
+        
+        res.status(200).json(result)
+
+    } catch (error) {
+        res.status(200).json({
+            success: false,
+            error: error
+        });
     }
 }
 module.exports = dao;
