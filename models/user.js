@@ -9,8 +9,9 @@ const UserSchema = new mongoose.Schema(
             'password': { type: String, required: true, trim: true },
             'orgName': { type: String, required: true,enum:['Org1','Org2']},
             'username': { type: String, required: true},
-            'wallet': { type: String, default:false },
+            'wallet': { type: Boolean, default:false },
             'walletAddress': { type: String,default:false },
+            'cipherString':{type:String},
             'loginType':{type:String,default:'user',enum:['user','admin']}
 
     });

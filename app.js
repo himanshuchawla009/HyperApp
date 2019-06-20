@@ -31,6 +31,7 @@ const passport = require('passport');
 const controller = require('./controllers/appController'),
 mongoose = require('mongoose');
 
+const authenticate = require('./auth/authenticate');
 require('./config.js');
 var hfc = require('fabric-client');
 
@@ -481,10 +482,45 @@ app.post('/admin/login',
 );
 
 // //adding user in any org
-// app.post('/admin/org/addUser',
-//   authenticate,
-// 	controller.handleAddOrg,
-// );
+app.post('/admin/org/addOrgUser',
+  authenticate,
+  controller.addOrgUser,
+);
+
+app.post('/admin/addChannel',
+  authenticate,
+  controller.addChannel,
+);
+
+app.post('/admin/joinChannel',
+  authenticate,
+  controller.joinChannel,
+);
+
+app.post('/admin/installChaincode',
+  authenticate,
+  controller.installChaincode,
+);
+
+app.post('/admin/instantiateChaincode',
+  authenticate,
+  controller.instantiateChaincode,
+);
+
+app.post('/user/invokeChainCode',
+  authenticate,
+  controller.invokeTransaction,
+);
+
+app.get('/user/queryChaincode',
+  authenticate,
+  controller.queryChaincode,
+);
+
+app.post('/user/createAccount',
+  authenticate,
+  controller.createAccount,
+);
 
 // //loading default user from org
 // app.post('/admin/org/loadUser',

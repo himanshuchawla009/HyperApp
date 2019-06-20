@@ -3,6 +3,9 @@ const config = require('../appConfig')
 const Session = require('./sessionModel');
 
 const ObjectId = require('mongoose').Types.ObjectId;
+var helper = require('../app/helper');
+var logger = helper.getLogger('authenticate');
+
 
 module.exports = (req, res, next) => {
 
@@ -35,8 +38,9 @@ module.exports = (req, res, next) => {
             next(err);
         }
         if (user && user.userId) {
-            req.user = user;
+            req.user = user.userId;
 
+            console.log("user",req.user)
             return next();
         } else {
             logger.debug('Session not found');

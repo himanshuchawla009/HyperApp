@@ -7,7 +7,7 @@
 const LocalStrategy = require('passport-local').Strategy;
 const User = require('../models/user');
 var helper = require('../app/helper');
-var logger = helper.getLogger('Session');
+var logger = helper.getLogger('passport');
 
 
 module.exports = (passport) => {
