@@ -30,7 +30,7 @@ var cors = require('cors');
 const passport = require('passport');
 const controller = require('./controllers/appController'),
 mongoose = require('mongoose');
-
+var appConfig = require('./appConfig');
 const authenticate = require('./auth/authenticate');
 require('./config.js');
 var hfc = require('fabric-client');
@@ -439,25 +439,31 @@ app.get('/channels/:channelName/chaincodes', async function(req, res) {
 });
 // Query to fetch all Installed/instantiated chaincodes
 app.get('/chaincodes', async function(req, res) {
-	var peer = req.query.peer;
+	var peer = "peer0.org1.example.com";
 	var installType = req.query.type;
 	logger.debug('================ GET INSTALLED CHAINCODES ======================');
 
-	let message = await query.getInstalledChaincodes(peer, null, 'installed', req.username, req.orgname)
-	res.send(message);
+	let message = await query.getInstalledChaincodes(peer, null, 'installed', appConfig.org1User, appConfig.org1Name)
+	res.json({
+		success:true,
+		data:message
+	});
 });
 // Query to fetch channels
 app.get('/channels', async function(req, res) {
 	logger.debug('================ GET CHANNELS ======================');
 	logger.debug('peer: ' + req.query.peer);
-	var peer = req.query.peer;
+	var peer = "peer0.org1.example.com";
 	if (!peer) {
 		res.json(getErrorMessage('\'peer\''));
 		return;
 	}
 
-	let message = await query.getChannels(peer, req.username, req.orgname);
-	res.send(message);
+	let message = await query.getChannels(peer, appConfig.org1User, appConfig.org1Name);
+	res.json({
+		success:true,
+		data:message.channels
+	})
 });
 
 
@@ -551,7 +557,19 @@ app.post('/admin/sendToUser',
   controller.exchangeTransaction,
 );
 
+app.get('/userDetails',
+authenticate,controller.getUserDetails)
 
+
+app.get('/balance',
+authenticate,controller.getBalance)
+
+app.get('/history',
+authenticate,controller.getTxHistory)
+
+
+app.get('/users',
+authenticate,controller.getAllUsersWithWallet)
 
 
 // //loading default user from org

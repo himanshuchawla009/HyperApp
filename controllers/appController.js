@@ -840,7 +840,9 @@ dao.createAdminAccount = async(req,res,next)=>{
 
         let result = await invoke.invokeChaincode(peers, channelName, chaincodeName, fcn, args, username, orgName);
 
-        
+        if(result.success) {
+            let existingUser = await User.findOneAndUpdate({_id:req.user._id},{wallet:true,walletAddress:"586f1462d8cba7572d842002e0bcf63f057d8a6c0d42274d40b74b9ce323cdd7"});
+        }
         res.status(200).json(result)
 
     } catch (error) {
@@ -960,4 +962,131 @@ dao.exchangeTransaction = async(req,res,next)=>{
         });
     }
 }
+
+dao.getUserDetails = async(req,res,next)=>{
+    try {
+        res.status(200).json({
+            success:true,
+            data:req.user
+        })
+    } catch (error) {
+        throw error;
+    }
+}
+
+dao.getAllUsersWithWallet = async(req,res,next)=>{
+    try {
+      let users  = await User.find({wallet:true,_id:{$ne:req.user._id}});
+      res.json({
+          success:true,
+          data:users
+      })
+    } catch (error) {
+        throw error;
+    }
+}
+
+dao.getBalance = async (req, res, next) => {
+    try {
+        logger.debug('==================== QUERY BY CHAINCODE ==================');
+        var peer = "peer0.org1.example.com";
+        var chaincodeName = appConfig.chaincodeName;
+        var channelName = appConfig.channelName;
+        var fcn = 'Balance';
+        var args = [req.user.walletAddress];
+        var username = appConfig.org1User;
+        var orgName = appConfig.org1Name;
+
+        logger.debug('channelName : ' + channelName);
+        logger.debug('chaincodeName : ' + chaincodeName);
+        logger.debug('fcn : ' + fcn);
+        logger.debug('args : ' + args);
+
+        if (!chaincodeName) {
+            res.json(getErrorMessage('\'chaincodeName\''));
+            return;
+        }
+        if (!channelName) {
+            res.json(getErrorMessage('\'channelName\''));
+            return;
+        }
+        if (!fcn) {
+            res.json(getErrorMessage('\'fcn\''));
+            return;
+        }
+        if (!args) {
+            res.json(getErrorMessage('\'args\''));
+            return;
+        }
+      
+        let result = await query.queryChaincode(peer, channelName, chaincodeName, args, fcn, username, orgName);
+        let messageArray = result.split(' ');
+        
+        
+        res.status(200).json({
+            success:true,
+            balance:messageArray[3]
+        })
+    } catch (error) {
+        res.status(200).json({
+            success: false,
+            message: error
+        });
+    }
+}
+
+
+
+dao.getTxHistory = async (req, res, next) => {
+    try {
+        logger.debug('==================== QUERY BY CHAINCODE ==================');
+        var peer = "peer0.org1.example.com";
+        var chaincodeName = appConfig.chaincodeName;
+        var channelName = appConfig.channelName;
+        var fcn = 'History';
+        var args = [req.user.walletAddress];
+        var username = appConfig.org1User;
+        var orgName = appConfig.org1Name;
+
+        logger.debug('channelName : ' + channelName);
+        logger.debug('chaincodeName : ' + chaincodeName);
+        logger.debug('fcn : ' + fcn);
+        logger.debug('args : ' + args);
+
+        if (!chaincodeName) {
+            res.json(getErrorMessage('\'chaincodeName\''));
+            return;
+        }
+        if (!channelName) {
+            res.json(getErrorMessage('\'channelName\''));
+            return;
+        }
+        if (!fcn) {
+            res.json(getErrorMessage('\'fcn\''));
+            return;
+        }
+        if (!args) {
+            res.json(getErrorMessage('\'args\''));
+            return;
+        }
+      
+        let result = await query.queryChaincode(peer, channelName, chaincodeName, args, fcn, username, orgName);
+        
+        let beginIndex= result.indexOf('[');
+        let endIndex = result.indexOf(']');
+        let subResult= result.substring(beginIndex,endIndex+1)
+        let exceptNewLine = subResult.replace(/\r?\n|\r/g, "")
+        let exceptSlash = exceptNewLine.replace(/\\\//g, "/");
+        res.status(200).json({
+            success:true,
+            data:JSON.parse(exceptSlash)
+        })
+    } catch (error) {
+        res.status(200).json({
+            success: false,
+            message: error
+        });
+    }
+}
+
 module.exports = dao;
