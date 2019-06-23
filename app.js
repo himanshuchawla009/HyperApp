@@ -564,6 +564,10 @@ authenticate,controller.getUserDetails)
 app.get('/balance',
 authenticate,controller.getBalance)
 
+app.get('/userBalance/:id',
+authenticate,controller.getUserBalance)
+
+
 app.get('/history',
 authenticate,controller.getTxHistory)
 
