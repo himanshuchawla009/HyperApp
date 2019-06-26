@@ -38,6 +38,9 @@ function restartNetwork() {
 	#Cleanup the stores
 	rm -rf ./fabric-client-kv-org*
 
+	rm -rf ./adminSteps
+
+
 	#Start the network
 	docker-compose -f ./artifacts/docker-compose.yaml up -d
 	echo

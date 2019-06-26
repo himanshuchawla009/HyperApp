@@ -4,6 +4,20 @@ const config = require('../appConfig');
 var log4js = require('log4js');
 var logger = log4js.getLogger('createAdmin');
 
+
+
+async function removeEverthing() {
+
+    try {
+       await Admin.remove({});
+       console.log("removed everything")
+       createAdmin();
+    } catch (error) {
+        throw(error);
+    }
+}
+
+
  async function createAdmin() {
 
     try {
@@ -38,4 +52,4 @@ var logger = log4js.getLogger('createAdmin');
     }
 }
 
-createAdmin();
+removeEverthing();
