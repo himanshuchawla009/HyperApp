@@ -728,6 +728,10 @@ dao.sendPayment = async(req,res,next)=>{
             res.json(getErrorMessage('\'pincode\''));
             return;
         }
+        if (!toAddress) {
+            res.json(getErrorMessage('\'toAddress\''));
+            return;
+        }
         
         if(req.user.wallet === false) {
             res.status(200).json({

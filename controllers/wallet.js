@@ -109,6 +109,8 @@ function makeTransaction(key, amount, toaddr) {
     pubkey: getPublickeyAsPem(key),
     nonce,
   };
+  
+  console.log(rq,"wallet request")
   rq = JSON.stringify(rq);
   const rq64 = base64.encode(rq);
   const signed = key.sign(sha256(rq64)).toDER('hex');
