@@ -155,7 +155,7 @@ dao.userLogin = async (req, res, next) => {
                 success: true,
                 status: 200,
                 authToken: req.token,
-                wallet: req.user.walletAddress,
+                walletAddress: req.user.walletAddress,
                 wallet: req.user.wallet
             });
         }
