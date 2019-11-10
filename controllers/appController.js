@@ -1200,7 +1200,9 @@ dao.getTxHistory = async (req, res, next) => {
 
                     let count = await Transactions.count({})
                     return res.status(200).json({
-                        data: transactions
+                        data: transactions,
+                        next: (page * limit <= count) ? true : false
+
                     })
 
                 } else {
@@ -1242,6 +1244,10 @@ dao.getTxHistory = async (req, res, next) => {
                     limit = limit,
                     selector = '',
                     query = '')
+                    let count = await Transactions.count({ $or: [
+                        { from: req.user.walletAddress },
+                        { to: req.user.walletAddress }
+                    ]})
 
                 return res.status(200).json({
                     data: transactions,
