@@ -1221,7 +1221,21 @@ dao.getTxHistory = async (req, res, next) => {
                 }
 
             } else {
+                let transactions = await fetchTransactions(params = { 
+                    $or:{
+                        from: req.user.walletAddress,
+                        to: req.user.walletAddress
+                    }
+                },
+                    sort = { createdAt:-1},
+                    skip = skip,
+                    limit = limit,
+                    selector = '',
+                    query = '',)
 
+                    return res.status(200).json({
+                        data: transactions
+                    })
             }
 
         }
