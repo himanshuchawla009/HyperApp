@@ -42,53 +42,53 @@ function getErrorMessage(field) {
     return response;
 }
 
-fetchTransactions =(params = {},
-    sort = { created_at:-1},
+fetchTransactions = (params = {},
+    sort = { created_at: -1 },
     skip = 0,
     limit = 0,
     selector = '',
     query = '',
     cb = () => { }) => {
-        return new Promise((resolve, reject) => {
-            Transactions.find(params, (err, data) => {
-              if (!err) {
+    return new Promise((resolve, reject) => {
+        Transactions.find(params, (err, data) => {
+            if (!err) {
                 resolve(data);
                 return cb(err, data);
-              } else {
+            } else {
                 reject(err);
                 return cb(err, false);
-              }
-            })
-              .sort(sort)
-              .select(selector)
-              .populate(query)
-              .skip(skip)
-              .limit(limit);
-          });
+            }
+        })
+            .sort(sort)
+            .select(selector)
+            .populate(query)
+            .skip(skip)
+            .limit(limit);
+    });
 }
-getPurchaseRequests =(params = {},
-    sort = { created_at:-1},
+getPurchaseRequests = (params = {},
+    sort = { created_at: -1 },
     skip = 0,
     limit = 0,
     selector = '',
     query = '',
     cb = () => { }) => {
-        return new Promise((resolve, reject) => {
-            Requests.find(params, (err, data) => {
-              if (!err) {
+    return new Promise((resolve, reject) => {
+        Requests.find(params, (err, data) => {
+            if (!err) {
                 resolve(data);
                 return cb(err, data);
-              } else {
+            } else {
                 reject(err);
                 return cb(err, false);
-              }
-            })
-              .sort(sort)
-              .select(selector)
-              .populate(query)
-              .skip(skip)
-              .limit(limit);
-          });
+            }
+        })
+            .sort(sort)
+            .select(selector)
+            .populate(query)
+            .skip(skip)
+            .limit(limit);
+    });
 }
 
 dao.userSignup = async (req, res, next) => {
@@ -156,7 +156,7 @@ dao.userLogin = async (req, res, next) => {
                 status: 200,
                 authToken: req.token,
                 wallet: req.user.walletAddress,
-                wallet:req.user.wallet
+                wallet: req.user.wallet
             });
         }
     } catch (error) {
@@ -186,7 +186,7 @@ dao.adminLogin = async (req, res, next) => {
                     status: 200,
                     authToken: req.token,
                     wallet: req.user.walletAddress,
-                    wallet:req.user.wallet
+                    wallet: req.user.wallet
                 });
             } else {
 
@@ -279,9 +279,9 @@ dao.addOrgUser = async (req, res, next) => {
                 chaincodeOrgOne: !!localStorage.getItem("chaincodeOrgOne") ? true : false,
                 chaincodeOrgTwo: !!localStorage.getItem("chaincodeOrgTwo") ? true : false,
                 joinOrgOne: !!localStorage.getItem("joinOrgOne") ? true : false,
-                joinOrgTwo:  !!localStorage.getItem("joinOrgTwo") ? true : false,
+                joinOrgTwo: !!localStorage.getItem("joinOrgTwo") ? true : false,
                 instantiate: !!localStorage.getItem("instantiate") ? true : false,
-                channel:  !!localStorage.getItem("channel") ? true : false,
+                channel: !!localStorage.getItem("channel") ? true : false,
             });
         } else {
             logger.debug('Failed to register the username %s for organization %s with::%s', username, orgName, response);
@@ -318,18 +318,18 @@ dao.addChannel = async (req, res, next) => {
             }
             res.status(200).json({
                 success: true,
-                message:result.message,
+                message: result.message,
                 orgOne: !!localStorage.getItem("orgOne") ? true : false,
                 orgTwo: !!localStorage.getItem("orgTwo") ? true : false,
                 chaincodeOrgOne: !!localStorage.getItem("chaincodeOrgOne") ? true : false,
                 chaincodeOrgTwo: !!localStorage.getItem("chaincodeOrgTwo") ? true : false,
                 joinOrgOne: !!localStorage.getItem("joinOrgOne") ? true : false,
-                joinOrgTwo:  !!localStorage.getItem("joinOrgTwo") ? true : false,
+                joinOrgTwo: !!localStorage.getItem("joinOrgTwo") ? true : false,
                 instantiate: !!localStorage.getItem("instantiate") ? true : false,
-                channel:  !!localStorage.getItem("channel") ? true : false,
+                channel: !!localStorage.getItem("channel") ? true : false,
             });
         }
-    } catch (error) {   
+    } catch (error) {
         res.status(200).json({
             success: false,
             message: error
@@ -409,13 +409,13 @@ dao.joinChannel = async (req, res, next) => {
             chaincodeOrgOne: !!localStorage.getItem("chaincodeOrgOne") ? true : false,
             chaincodeOrgTwo: !!localStorage.getItem("chaincodeOrgTwo") ? true : false,
             joinOrgOne: !!localStorage.getItem("joinOrgOne") ? true : false,
-            joinOrgTwo:  !!localStorage.getItem("joinOrgTwo") ? true : false,
+            joinOrgTwo: !!localStorage.getItem("joinOrgTwo") ? true : false,
             instantiate: !!localStorage.getItem("instantiate") ? true : false,
-            channel:  !!localStorage.getItem("channel") ? true : false,
+            channel: !!localStorage.getItem("channel") ? true : false,
         });
 
     } catch (error) {
-       throw error;
+        throw error;
     }
 }
 
@@ -500,13 +500,13 @@ dao.installChaincode = async (req, res, next) => {
             chaincodeOrgOne: !!localStorage.getItem("chaincodeOrgOne") ? true : false,
             chaincodeOrgTwo: !!localStorage.getItem("chaincodeOrgTwo") ? true : false,
             joinOrgOne: !!localStorage.getItem("joinOrgOne") ? true : false,
-            joinOrgTwo:  !!localStorage.getItem("joinOrgTwo") ? true : false,
+            joinOrgTwo: !!localStorage.getItem("joinOrgTwo") ? true : false,
             instantiate: !!localStorage.getItem("instantiate") ? true : false,
-            channel:  !!localStorage.getItem("channel") ? true : false,
+            channel: !!localStorage.getItem("channel") ? true : false,
         });
 
     } catch (error) {
-       
+
         throw error;
     }
 }
@@ -549,9 +549,9 @@ dao.instantiateChaincode = async (req, res, next) => {
                 chaincodeOrgOne: !!localStorage.getItem("chaincodeOrgOne") ? true : false,
                 chaincodeOrgTwo: !!localStorage.getItem("chaincodeOrgTwo") ? true : false,
                 joinOrgOne: !!localStorage.getItem("joinOrgOne") ? true : false,
-                joinOrgTwo:  !!localStorage.getItem("joinOrgTwo") ? true : false,
+                joinOrgTwo: !!localStorage.getItem("joinOrgTwo") ? true : false,
                 instantiate: !!localStorage.getItem("instantiate") ? true : false,
-                channel:  !!localStorage.getItem("channel") ? true : false,
+                channel: !!localStorage.getItem("channel") ? true : false,
             });
         }
     } catch (error) {
@@ -651,31 +651,31 @@ dao.queryChaincode = async (req, res, next) => {
     }
 }
 
-dao.createAccount = async(req,res,next)=>{
+dao.createAccount = async (req, res, next) => {
     try {
         let pincode = req.body.pincode;
         let fcn = "CreateAccount"
         var peers = ["peer0.org1.example.com", "peer0.org2.example.com"];
         var chaincodeName = appConfig.chaincodeName;
         var channelName = appConfig.channelName;
-     
+
         var username;
         var orgName;
 
 
-        if(req.user.loginType === 'admin') {
-            username= appConfig.org1User;
+        if (req.user.loginType === 'admin') {
+            username = appConfig.org1User;
             orgName = appConfig.org1Name;
         } else {
 
-            username= req.user.username;
+            username = req.user.username;
             orgName = req.user.orgName;
         }
         if (!pincode) {
             res.json(getErrorMessage('\'pincode\''));
             return;
         }
-        
+
         // if(req.user.wallet !== false) {
         //     res.status(200).json({
         //         success:false,
@@ -684,23 +684,23 @@ dao.createAccount = async(req,res,next)=>{
         // }
 
         const key = wallet.genKey();
-        console.log("ecdsa keys",key)
+        console.log("ecdsa keys", key)
         //getting address from ecdsa keys
         const address = wallet.getWallet(key);
-        console.log("address",address)
+        console.log("address", address)
         //getting private key in pem file form from ecdsa key
         const pem = await wallet.getPrivatekeyAsPem(key);
 
-        console.log("private pem",pem)
+        console.log("private pem", pem)
 
         //encrypting private key pem file with pincode
         const cipherString = wallet.getPrivateKeyAsCrypto(pem, pincode);
 
-        console.log("cipher string",cipherString)
+        console.log("cipher string", cipherString)
         //creating hash of json to be sent to chaincode
         const json_hash = wallet.createAccount(key, appConfig.delimiter);
         // console.log(address)
-        console.log("json hash",json_hash)
+        console.log("json hash", json_hash)
         // const t = new Date().getTime();
         // const keyfile = {
         //   enc: `enc_key_${address}_${t}.${delimiter.replace(/\./g, '').toLowerCase()}`,
@@ -731,7 +731,7 @@ dao.createAccount = async(req,res,next)=>{
         // })
         let args = [json_hash];
 
-       
+
 
 
         logger.debug("login type:" + req.user.loginType);
@@ -744,8 +744,8 @@ dao.createAccount = async(req,res,next)=>{
 
         let result = await invoke.invokeChaincode(peers, channelName, chaincodeName, fcn, args, username, orgName);
 
-        if(result.success) {
-            let existingUser = await User.findOneAndUpdate({_id:req.user._id},{wallet:true,walletAddress:address,cipherString:cipherString});
+        if (result.success) {
+            let existingUser = await User.findOneAndUpdate({ _id: req.user._id }, { wallet: true, walletAddress: address, cipherString: cipherString });
         }
         res.status(200).json(result)
 
@@ -757,26 +757,26 @@ dao.createAccount = async(req,res,next)=>{
     }
 }
 
-dao.sendPayment = async(req,res,next)=>{
+dao.sendPayment = async (req, res, next) => {
     try {
 
-        let { pincode,amount, toAddress } = req.body;
-    
+        let { pincode, amount, toAddress } = req.body;
+
         let fcn = "Transaction"
         var peers = ["peer0.org1.example.com", "peer0.org2.example.com"];
         var chaincodeName = appConfig.chaincodeName;
         var channelName = appConfig.channelName;
-     
+
         var username;
         var orgName;
 
 
-        if(req.user.loginType === 'admin') {
-            username= appConfig.org1User;
+        if (req.user.loginType === 'admin') {
+            username = appConfig.org1User;
             orgName = appConfig.org1Name;
         } else {
 
-            username= req.user.username;
+            username = req.user.username;
             orgName = req.user.orgName;
         }
         if (!pincode) {
@@ -787,21 +787,21 @@ dao.sendPayment = async(req,res,next)=>{
             res.json(getErrorMessage('\'toAddress\''));
             return;
         }
-        
-        if(req.user.wallet === false) {
+
+        if (req.user.wallet === false) {
             res.status(200).json({
                 success: false,
                 message: "Please create a wallet before making transaction"
             });
         }
 
-    
-        let tx = await sendCoins(req.user.cipherString,pincode,amount,toAddress);
 
-        console.log("transaction",tx);
+        let tx = await sendCoins(req.user.cipherString, pincode, amount, toAddress);
+
+        console.log("transaction", tx);
         let args = [tx];
 
-    
+
 
         let result = await invoke.invokeChaincode(peers, channelName, chaincodeName, fcn, args, username, orgName);
 
@@ -811,34 +811,34 @@ dao.sendPayment = async(req,res,next)=>{
 
         let txId = result.message.split('transaction ID:')[1];
 
-      
+
         let txns = new Transactions();
-        txns.from =req.user.walletAddress,
-        txns.to= toAddress,
-        txns.amount = amount,
-        txns.txId =txId
+        txns.from = req.user.walletAddress,
+            txns.to = toAddress,
+            txns.amount = amount,
+            txns.txId = txId
         await txns.save();
         res.status(200).json(result)
     } catch (error) {
         res.status(500).json({
-            success:false,
-            message:error
+            success: false,
+            message: error
         })
 
     }
 }
 
-sendCoins = async(cipherString,pin,amount,toAddress)=>{
+sendCoins = async (cipherString, pin, amount, toAddress) => {
     try {
-        console.log(cipherString,"cipher",pin)
-        let privatePem = await wallet.getCryptoAsPrivateKey(cipherString,pin);
-        console.log("ecdsaKey",privatePem);
+        console.log(cipherString, "cipher", pin)
+        let privatePem = await wallet.getCryptoAsPrivateKey(cipherString, pin);
+        console.log("ecdsaKey", privatePem);
 
         let ecdsaKey = await wallet.getKeyFromPrivatePem(privatePem);
-        console.log(ecdsaKey,"ecdsa key")
+        console.log(ecdsaKey, "ecdsa key")
 
-        let tx = await wallet.makeTransaction(ecdsaKey,amount,toAddress);
-        console.log("txn",tx)
+        let tx = await wallet.makeTransaction(ecdsaKey, amount, toAddress);
+        console.log("txn", tx)
         return tx;
     } catch (error) {
         throw error;
@@ -846,7 +846,7 @@ sendCoins = async(cipherString,pin,amount,toAddress)=>{
 
 }
 
-dao.getConfiguration = async(req,res,next)=>{
+dao.getConfiguration = async (req, res, next) => {
     try {
 
         console.log("hey")
@@ -857,52 +857,52 @@ dao.getConfiguration = async(req,res,next)=>{
             chaincodeOrgOne: !!localStorage.getItem("chaincodeOrgOne") ? true : false,
             chaincodeOrgTwo: !!localStorage.getItem("chaincodeOrgTwo") ? true : false,
             joinOrgOne: !!localStorage.getItem("joinOrgOne") ? true : false,
-            joinOrgTwo:  !!localStorage.getItem("joinOrgTwo") ? true : false,
+            joinOrgTwo: !!localStorage.getItem("joinOrgTwo") ? true : false,
             instantiate: !!localStorage.getItem("instantiate") ? true : false,
-            channel:  !!localStorage.getItem("channel") ? true : false,
+            channel: !!localStorage.getItem("channel") ? true : false,
 
         }
 
 
         res.status(200).json(result);
-        
+
     } catch (error) {
         throw error;
     }
 }
 
 
-dao.createAdminAccount = async(req,res,next)=>{
+dao.createAdminAccount = async (req, res, next) => {
     try {
         let pincode = req.body.pincode;
         let fcn = "WriteAccount"
         var peers = ["peer0.org1.example.com", "peer0.org2.example.com"];
         var chaincodeName = appConfig.chaincodeName;
         var channelName = appConfig.channelName;
-     
+
         var username;
         var orgName;
 
 
-        if(req.user.loginType === 'admin') {
-            username= appConfig.org1User;
+        if (req.user.loginType === 'admin') {
+            username = appConfig.org1User;
             orgName = appConfig.org1Name;
         } else {
 
-            username= req.user.username;
+            username = req.user.username;
             orgName = req.user.orgName;
         }
-       
-    
-        
-        console.log(wallet.createMintAccountTx(),"mint account tx");   
-        let json_hash =  wallet.createMintAccountTx();
-        console.log("json_hasinng=====================",json_hash)
-        let trimmedHash =  json_hash.replace(/\r?\n|\r/g, " ");
+
+
+
+        console.log(wallet.createMintAccountTx(), "mint account tx");
+        let json_hash = wallet.createMintAccountTx();
+        console.log("json_hasinng=====================", json_hash)
+        let trimmedHash = json_hash.replace(/\r?\n|\r/g, " ");
         let args = [trimmedHash.trim()];
 
-        console.log(args,"args")
-       
+        console.log(args, "args")
+
         logger.debug("login type:" + req.user.loginType);
         logger.debug('channelName  : ' + channelName);
         logger.debug('chaincodeName : ' + chaincodeName);
@@ -913,8 +913,8 @@ dao.createAdminAccount = async(req,res,next)=>{
 
         let result = await invoke.invokeChaincode(peers, channelName, chaincodeName, fcn, args, username, orgName);
 
-        if(result.success) {
-            let existingUser = await User.findOneAndUpdate({_id:req.user._id},{wallet:true,walletAddress:"586f1462d8cba7572d842002e0bcf63f057d8a6c0d42274d40b74b9ce323cdd7"});
+        if (result.success) {
+            let existingUser = await User.findOneAndUpdate({ _id: req.user._id }, { wallet: true, walletAddress: "586f1462d8cba7572d842002e0bcf63f057d8a6c0d42274d40b74b9ce323cdd7" });
         }
         res.status(200).json(result)
 
@@ -928,37 +928,37 @@ dao.createAdminAccount = async(req,res,next)=>{
 
 
 
-dao.mintTokens = async(req,res,next)=>{
+dao.mintTokens = async (req, res, next) => {
     try {
         let pincode = req.body.pincode;
         let amount = req.body.amount;
-      
+
         let fcn = "Mint"
         var peers = ["peer0.org1.example.com", "peer0.org2.example.com"];
         var chaincodeName = appConfig.chaincodeName;
         var channelName = appConfig.channelName;
-     
+
         var username;
         var orgName;
 
 
-        if(req.user.loginType === 'admin') {
-            username= appConfig.org1User;
+        if (req.user.loginType === 'admin') {
+            username = appConfig.org1User;
             orgName = appConfig.org1Name;
         } else {
 
-            username= req.user.username;
+            username = req.user.username;
             orgName = req.user.orgName;
         }
-       
-    
-        
-       
-        let json_hash =  wallet.mintTx(amount);
-        console.log("json_has",json_hash)
-        let trimmedHash =  json_hash.replace(/\r?\n|\r/g, " ");
+
+
+
+
+        let json_hash = wallet.mintTx(amount);
+        console.log("json_has", json_hash)
+        let trimmedHash = json_hash.replace(/\r?\n|\r/g, " ");
         let args = [trimmedHash.trim()];
-       
+
 
 
         logger.debug("login type:" + req.user.loginType);
@@ -974,11 +974,11 @@ dao.mintTokens = async(req,res,next)=>{
         let txId = result.message.split('transaction ID:')[1];
         let txns = new Transactions();
         txns.from = 'MINTED',
-        txns.to= req.user.walletAddress,
-        txns.amount = amount,
-        txns.txId =txId
+            txns.to = req.user.walletAddress,
+            txns.amount = amount,
+            txns.txId = txId
         await txns.save();
-        
+
         res.status(200).json(result)
 
     } catch (error) {
@@ -990,7 +990,7 @@ dao.mintTokens = async(req,res,next)=>{
 }
 
 
-dao.exchangeTransaction = async(req,res,next)=>{
+dao.exchangeTransaction = async (req, res, next) => {
     try {
         let pincode = req.body.pincode;
         let amount = req.body.amount;
@@ -999,29 +999,29 @@ dao.exchangeTransaction = async(req,res,next)=>{
         var peers = ["peer0.org1.example.com", "peer0.org2.example.com"];
         var chaincodeName = appConfig.chaincodeName;
         var channelName = appConfig.channelName;
-     
+
         var username;
         var orgName;
 
 
-        if(req.user.loginType === 'admin') {
-            username= appConfig.org1User;
+        if (req.user.loginType === 'admin') {
+            username = appConfig.org1User;
             orgName = appConfig.org1Name;
         } else {
 
-            username= req.user.username;
+            username = req.user.username;
             orgName = req.user.orgName;
         }
-       
-    
-        
-       
-        let json_hash =  wallet.exchangeTx(amount,address);
-        console.log("json_has",json_hash)
-        let trimmedHash =  json_hash.replace(/\r?\n|\r/g, " ");
+
+
+
+
+        let json_hash = wallet.exchangeTx(amount, address);
+        console.log("json_has", json_hash)
+        let trimmedHash = json_hash.replace(/\r?\n|\r/g, " ");
         let args = [trimmedHash.trim()];
-       
-     
+
+
         logger.debug("login type:" + req.user.loginType);
         logger.debug('channelName  : ' + channelName);
         logger.debug('chaincodeName : ' + chaincodeName);
@@ -1038,12 +1038,12 @@ dao.exchangeTransaction = async(req,res,next)=>{
 
         let txns = new Transactions();
         txns.from = req.user.walletAddress,
-        txns.to= address,
-        txns.amount = amount,
-        txns.txId =txId
+            txns.to = address,
+            txns.amount = amount,
+            txns.txId = txId
         await txns.save();
-        
-       
+
+
 
         res.status(200).json(result)
 
@@ -1055,24 +1055,24 @@ dao.exchangeTransaction = async(req,res,next)=>{
     }
 }
 
-dao.getUserDetails = async(req,res,next)=>{
+dao.getUserDetails = async (req, res, next) => {
     try {
         res.status(200).json({
-            success:true,
-            data:req.user
+            success: true,
+            data: req.user
         })
     } catch (error) {
         throw error;
     }
 }
 
-dao.getAllUsersWithWallet = async(req,res,next)=>{
+dao.getAllUsersWithWallet = async (req, res, next) => {
     try {
-      let users  = await User.find({wallet:true,_id:{$ne:req.user._id}});
-      res.json({
-          success:true,
-          data:users
-      })
+        let users = await User.find({ wallet: true, _id: { $ne: req.user._id } });
+        res.json({
+            success: true,
+            data: users
+        })
     } catch (error) {
         throw error;
     }
@@ -1110,14 +1110,14 @@ dao.getBalance = async (req, res, next) => {
             res.json(getErrorMessage('\'args\''));
             return;
         }
-      
+
         let result = await query.queryChaincode(peer, channelName, chaincodeName, args, fcn, username, orgName);
         let messageArray = result.split(' ');
-        
-        
+
+
         res.status(200).json({
-            success:true,
-            balance:messageArray[3]
+            success: true,
+            balance: messageArray[3]
         })
     } catch (error) {
         res.status(200).json({
@@ -1131,14 +1131,14 @@ dao.getBalance = async (req, res, next) => {
 
 dao.getTxHistory = async (req, res, next) => {
     try {
-    
+
         let source = !!req.query.source ? req.query.source : "db";
 
-        let limit = !!req.query.limit ? req.query.limit :10;
+        let limit = !!req.query.limit ? req.query.limit : 10;
 
         let page = !!req.query.page ? req.query.page : 1;
-        let skip = (page -1 ) * limit;
-        if(source === 'blockchain') {
+        let skip = (page - 1) * limit;
+        if (source === 'blockchain') {
             logger.debug('==================== QUERY BY CHAINCODE ==================');
             var peer = "peer0.org1.example.com";
             var chaincodeName = appConfig.chaincodeName;
@@ -1147,12 +1147,12 @@ dao.getTxHistory = async (req, res, next) => {
             var args = [req.user.walletAddress];
             var username = appConfig.org1User;
             var orgName = appConfig.org1Name;
-    
+
             logger.debug('channelName : ' + channelName);
             logger.debug('chaincodeName : ' + chaincodeName);
             logger.debug('fcn : ' + fcn);
             logger.debug('args : ' + args);
-    
+
             if (!chaincodeName) {
                 res.json(getErrorMessage('\'chaincodeName\''));
                 return;
@@ -1169,73 +1169,85 @@ dao.getTxHistory = async (req, res, next) => {
                 res.json(getErrorMessage('\'args\''));
                 return;
             }
-          
+
             let result = await query.queryChaincode(peer, channelName, chaincodeName, args, fcn, username, orgName);
-            
-            let beginIndex= result.indexOf('[');
+
+            let beginIndex = result.indexOf('[');
             let endIndex = result.indexOf(']');
-            let subResult= result.substring(beginIndex,endIndex+1)
+            let subResult = result.substring(beginIndex, endIndex + 1)
             let exceptNewLine = subResult.replace(/\r?\n|\r/g, "")
             let exceptSlash = exceptNewLine.replace(/\\\//g, "/");
             return res.status(200).json({
-                success:true,
-                data:JSON.parse(exceptSlash)
+                success: true,
+                data: JSON.parse(exceptSlash)
             })
         } else {
 
-            if(req.user.loginType === 'admin') {
+            if (req.user.loginType === 'admin') {
 
                 let txType = !!req.query.txType ? req.query.txType : "my";
 
-                if(txType === 'all') {
+                if (txType === 'all') {
 
-                   let transactions = await fetchTransactions(
-                    params = {},
-                    sort = { createdAt:-1},
-                    skip = skip,
-                    limit = limit,
-                    selector = '',
-                    query = ''
+                    let transactions = await fetchTransactions(
+                        params = {},
+                        sort = { createdAt: -1 },
+                        skip = skip,
+                        limit = limit,
+                        selector = '',
+                        query = ''
                     )
 
+                    let count = await Transactions.count({})
                     return res.status(200).json({
                         data: transactions
                     })
 
                 } else {
-                    let transactions = await fetchTransactions(params = { 
-                        $or:[
-                            {from: req.user.walletAddress},
-                        {    to: req.user.walletAddress}
+                    let transactions = await fetchTransactions(params = {
+                        $or: [
+                            { from: req.user.walletAddress },
+                            { to: req.user.walletAddress }
                         ]
                     },
-                        sort = { createdAt:-1},
+                        sort = { createdAt: -1 },
                         skip = skip,
                         limit = limit,
                         selector = '',
-                        query = '',)
-    
-                        return res.status(200).json({
-                            data: transactions
-                        })
+                        query = '')
+
+                    let count = await Transactions.count({
+                        $or: [
+                            { from: req.user.walletAddress },
+                            { to: req.user.walletAddress }
+                        ]
+                    })
+
+                    return res.status(200).json({
+                        data: transactions,
+                        next: (page * limit <= count) ? true : false
+
+                    })
                 }
 
             } else {
-                let transactions = await fetchTransactions(params = { 
-                    $or:[
-                        {from: req.user.walletAddress},
-                    {    to: req.user.walletAddress}
+                let transactions = await fetchTransactions(params = {
+                    $or: [
+                        { from: req.user.walletAddress },
+                        { to: req.user.walletAddress }
                     ]
                 },
-                    sort = { createdAt:-1},
+                    sort = { createdAt: -1 },
                     skip = skip,
                     limit = limit,
                     selector = '',
-                    query = '',)
+                    query = '')
 
-                    return res.status(200).json({
-                        data: transactions
-                    })
+                return res.status(200).json({
+                    data: transactions,
+                    next: (page * limit <= count) ? true : false
+
+                })
             }
 
         }
@@ -1280,14 +1292,14 @@ dao.getUserBalance = async (req, res, next) => {
             res.json(getErrorMessage('\'args\''));
             return;
         }
-      
+
         let result = await query.queryChaincode(peer, channelName, chaincodeName, args, fcn, username, orgName);
         let messageArray = result.split(' ');
-        
-        
+
+
         return res.status(200).json({
-            success:true,
-            balance:messageArray[3]
+            success: true,
+            balance: messageArray[3]
         })
     } catch (error) {
         return res.status(400).json({
@@ -1301,14 +1313,14 @@ dao.getUserBalance = async (req, res, next) => {
 dao.createPurchaseRequest = async (req, res, next) => {
     try {
 
-        if(!!req.body.amount) {
-            let req = {
-                from: req.user.walletAddress,
-                amount: req.body.amount
-            }
+        if (!!req.body.amount) {
+
             let rquts = new Requests();
 
-            await rquts.save({req});
+            rquts.from = req.user.walletAddress;
+            rquts.amount = req.body.amount;
+
+            await rquts.save();
 
             return res.status(200).json({
                 success: true,
@@ -1321,14 +1333,14 @@ dao.createPurchaseRequest = async (req, res, next) => {
                 message: "Please send purchase amount"
             });
         }
-       
+
 
 
     }
-    catch(err) {
-       return res.status(400).json({
+    catch (err) {
+        return res.status(400).json({
             success: false,
-            message:err
+            message: err
         });
     }
 }
@@ -1338,13 +1350,21 @@ dao.createPurchaseRequest = async (req, res, next) => {
 dao.updatePurchaseRequest = async (req, res, next) => {
     try {
 
-        if(!!req.body.amount) {
-            let req = {
-                from: req.user.walletAddress,
-                amount: req.body.amount
-            }
+        if (!!req.body.status && !!req.body.requestId) {
 
+            if (req.body.status === 'rejected' || (req.body.status === 'accepted')) {
+
+                await Requests.findOneAndUpdate({_id:requestId},{status:req.body.status})
+
+            } else {
+                return res.status(400).json({
+                    success: false,
+                    message: "Please send a valid request update status"
+                });
+            }
             // await Requests.save({req});
+
+
 
             return res.status(200).json({
                 success: true,
@@ -1352,19 +1372,19 @@ dao.updatePurchaseRequest = async (req, res, next) => {
             });
 
         } else {
-           return res.status(400).json({
+            return res.status(400).json({
                 success: false,
-                message: "Please send purchase amount"
+                message: "Please send request update status and request id"
             });
         }
-       
+
 
 
     }
-    catch(err) {
+    catch (err) {
         return res.status(400).json({
             success: false,
-            message:err
+            message: err
         });
     }
 }
@@ -1374,48 +1394,53 @@ dao.updatePurchaseRequest = async (req, res, next) => {
 dao.getPurchaseRequests = async (req, res, next) => {
     try {
 
-        let limit = !!req.query.limit ? req.query.limit :10;
+        let limit = !!req.query.limit ? req.query.limit : 10;
 
         let page = !!req.query.page ? req.query.page : 1;
-        let skip = (page -1 ) * limit;
-        if(req.user.loginType === 'admin') {
-            
-            let requests = await getPurchaseRequests( params = {},
-                sort = { createdAt:-1},
+        let skip = (page - 1) * limit;
+        if (req.user.loginType === 'admin') {
+
+            let requests = await getPurchaseRequests(params = {},
+                sort = { createdAt: -1 },
                 skip = skip,
                 limit = limit,
                 selector = '',
                 query = '')
 
-           return res.status(200).json({
+            let count = await Requests.count({});
+            return res.status(200).json({
                 success: true,
-                data: requests
+                data: requests,
+                next: (page * limit <= count) ? true : false
             });
 
         } else {
 
-             
-            let requests = await getPurchaseRequests( { from : req.user.walletAddress},
-                sort = { createdAt:-1},
+
+            let requests = await getPurchaseRequests({ from: req.user.walletAddress },
+                sort = { createdAt: -1 },
                 skip = skip,
                 limit = limit,
                 selector = '',
                 query = '')
 
+            let count = await Requests.count({ from: req.user.walletAddress });
 
             return res.status(200).json({
                 success: true,
-                data: requests
+                data: requests,
+                next: (page * limit <= count) ? true : false
+
             });
         }
-       
+
 
 
     }
-    catch(err) {
-       return res.status(400).json({
+    catch (err) {
+        return res.status(400).json({
             success: false,
-            message:err
+            message: err
         });
     }
 }
