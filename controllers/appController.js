@@ -1176,7 +1176,7 @@ dao.getTxHistory = async (req, res, next) => {
             let subResult= result.substring(beginIndex,endIndex+1)
             let exceptNewLine = subResult.replace(/\r?\n|\r/g, "")
             let exceptSlash = exceptNewLine.replace(/\\\//g, "/");
-            res.status(200).json({
+            return res.status(200).json({
                 success:true,
                 data:JSON.parse(exceptSlash)
             })
@@ -1270,16 +1270,18 @@ dao.getUserBalance = async (req, res, next) => {
         let messageArray = result.split(' ');
         
         
-        res.status(200).json({
+        return res.status(200).json({
             success:true,
             balance:messageArray[3]
         })
     } catch (error) {
-        res.status(400).json({
+        return res.status(400).json({
             success: false,
             message: error
         });
     }
+}
+
 
 dao.createPurchaseRequest = async (req, res, next) => {
     try {
@@ -1291,13 +1293,13 @@ dao.createPurchaseRequest = async (req, res, next) => {
             }
             await Requests.save(req);
 
-            res.status(200).json({
+            return res.status(200).json({
                 success: true,
                 message: "Successfully submitted your purchase request"
             });
 
         } else {
-            res.status(400).json({
+            return res.status(400).json({
                 success: false,
                 message: "Please send purchase amount"
             });
@@ -1307,7 +1309,7 @@ dao.createPurchaseRequest = async (req, res, next) => {
 
     }
     catch(err) {
-        res.status(400).json({
+       return res.status(400).json({
             success: false,
             message:err
         });
@@ -1326,13 +1328,13 @@ dao.updatePurchaseRequest = async (req, res, next) => {
             }
             await Requests.save(req);
 
-            res.status(200).json({
+            return res.status(200).json({
                 success: true,
                 message: "Successfully submitted your purchase request"
             });
 
         } else {
-            res.status(400).json({
+           return res.status(400).json({
                 success: false,
                 message: "Please send purchase amount"
             });
@@ -1342,7 +1344,7 @@ dao.updatePurchaseRequest = async (req, res, next) => {
 
     }
     catch(err) {
-        res.status(400).json({
+        return res.status(400).json({
             success: false,
             message:err
         });
@@ -1367,7 +1369,7 @@ dao.getPurchaseRequests = async (req, res, next) => {
                 selector = '',
                 query = '')
 
-            res.status(200).json({
+           return res.status(200).json({
                 success: true,
                 data: requests
             });
@@ -1383,7 +1385,7 @@ dao.getPurchaseRequests = async (req, res, next) => {
                 query = '')
 
 
-            res.status(200).json({
+            return res.status(200).json({
                 success: true,
                 data: requests
             });
@@ -1393,12 +1395,11 @@ dao.getPurchaseRequests = async (req, res, next) => {
 
     }
     catch(err) {
-        res.status(400).json({
+       return res.status(400).json({
             success: false,
             message:err
         });
     }
-}
 }
 
 
