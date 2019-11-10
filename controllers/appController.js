@@ -811,14 +811,14 @@ dao.sendPayment = async(req,res,next)=>{
 
         let txId = result.message.split('transaction ID:')[1];
 
-        let tx = {
+        let txGen = {
             from: req.user.walletAddress,
             to:toAddress,
             amount: amount,
             txId
         }
 
-        await Transactions.save(tx);
+        await Transactions.save(txGen);
         res.status(200).json(result)
     } catch (error) {
         throw error;
@@ -970,14 +970,14 @@ dao.mintTokens = async(req,res,next)=>{
 
         let txId = result.message.split('transaction ID:')[1];
 
-        let tx = {
+        let txGen = {
             from: "Minted",
             to:req.user.walletAddress,
             amount: amount,
             txId
         }
 
-        await Transactions.save(tx);
+        await Transactions.save(txGen);
         
         res.status(200).json(result)
 
@@ -1036,14 +1036,14 @@ dao.exchangeTransaction = async(req,res,next)=>{
 
         let txId = result.message.split('transaction ID:')[1];
 
-        let tx = {
+        let txGen = {
             to: address,
             from:req.user.walletAddress,
             amount: amount,
             txId
         }
 
-        await Transactions.save(tx);
+        await Transactions.save(txGen);
         res.status(200).json(result)
 
     } catch (error) {
