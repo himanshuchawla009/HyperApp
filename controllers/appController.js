@@ -1204,10 +1204,10 @@ dao.getTxHistory = async (req, res, next) => {
 
                 } else {
                     let transactions = await fetchTransactions(params = { 
-                        $or:{
-                            from: req.user.walletAddress,
-                            to: req.user.walletAddress
-                        }
+                        $or:[
+                            {from: req.user.walletAddress},
+                        {    to: req.user.walletAddress}
+                        ]
                     },
                         sort = { createdAt:-1},
                         skip = skip,
@@ -1222,10 +1222,10 @@ dao.getTxHistory = async (req, res, next) => {
 
             } else {
                 let transactions = await fetchTransactions(params = { 
-                    $or:{
-                        from: req.user.walletAddress,
-                        to: req.user.walletAddress
-                    }
+                    $or:[
+                        {from: req.user.walletAddress},
+                    {    to: req.user.walletAddress}
+                    ]
                 },
                     sort = { createdAt:-1},
                     skip = skip,
