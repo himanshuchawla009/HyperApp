@@ -1,4 +1,3 @@
-
 const elliptic = require('elliptic').ec;
 const EC = new elliptic('secp256k1');
 
@@ -168,7 +167,7 @@ function getKeyFromPrivatePem(pem_str) {
     let  { stdout, stderr, code }  = shell.exec(`shopt -s expand_aliases; exchange ${amount} ${address}`,
       { shell: '/bin/bash'});
       console.log(stdout)
-     return "eyJvcmlnaW5hbCI6IiIsIlNpZ25hdHVyZSI6IiIsInRvIjoiMWQwYzBmOGIxMWU0NTA1NzkzNGRhNzljODkxOWI4Zjk1NjYyYTk3ZTVkZGM1MTJjY2VmMGJiMmI0YWI0Yzc1NiIsImFtb3VudCI6IjQwMDAifQo=.ELAMA.3046022100e59b2fe032186e7f8933b5660257d29bde65c7ce4a62867d3239d3861016eb5b022100e9bb86344b0101d7dd297433d57452ebb9e77e9935844cbc2820c70ffd22e2f8"
+     return "eyJvcmlnaW5hbCI6IiIsIlNpZ25hdHVyZSI6IiIsInRvIjoiMWQwYzBmOGIxMWU0NTA1NzkzNGRhNzljODkxOWI4Zjk1NjYyYTk3ZTVkZGM1MTJjY2VmMGJiMmI0YWI0Yzc1NiIsImFtb3VudCI6IjQwMDAifQo=.ELAMA.3046022100e59b2fe032186e7f8933b5660257d29bde65c7ce4a62867d3239d3861016eb5b022100e9bb86344b0101d7dd297433d57452ebb9e77e9935844cbc2820c70ffd22e2f8
      // return stdout
      //return eyJvcmlnaW5hbCI6IiIsIlNpZ25hdHVyZSI6IiIsInRvIjoiNDAwMCIsImFtb3VudCI6IjFkMGMwZjhiMTFlNDUwNTc5MzRkYTc5Yzg5MTliOGY5NTY2MmE5N2U1ZGRjNTEyY2NlZjBiYjJiNGFiNGM3NTYifQo=.ELAMA.304502210080e2129e484b9567e6631f02fed252b4e0be9ddb812ff690def8fd7626669708022052ecf09ecf738bc84bda78454ecbc0e5a8c029af78a3ea4b69c78a9bb1871b88";
   } catch (error) {

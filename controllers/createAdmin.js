@@ -9,9 +9,9 @@ var logger = log4js.getLogger('createAdmin');
 async function removeEverthing() {
 
     try {
-       await Admin.remove({});
-       console.log("removed everything")
-       createAdmin();
+//       await Admin.remove({});
+//       console.log("removed everything")
+//       createAdmin();
     } catch (error) {
         throw(error);
     }

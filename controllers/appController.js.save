@@ -826,8 +826,10 @@ dao.createAdminAccount = async(req,res,next)=>{
        
     
         
-        console.log(wallet.createMintAccountTx(),"mint account tx");   
-        let json_hash =  wallet.createMintAccountTx();
+       
+        console.log( wallet.createMintAccountTx();
+
+        let json_hash = wallet.createMintAccountTx();
         console.log("json_hasinng=====================",json_hash)
         let trimmedHash =  json_hash.replace(/\r?\n|\r/g, " ");
         let args = [trimmedHash.trim()];

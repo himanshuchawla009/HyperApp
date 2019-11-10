@@ -100,6 +100,7 @@ mongoose.connect("mongodb://localhost:27017/elama", {
 // 	var token = req.token;
 // 	jwt.verify(token, app.get('secret'), function(err, decoded) {
 // 		if (err) {
+
 // 			res.send({
 // 				success: false,
 // 				message: 'Failed to authenticate token. Make sure to include the ' +
