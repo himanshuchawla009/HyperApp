@@ -4,7 +4,7 @@ const TransactionSchema = new mongoose.Schema(
     {
             'from': { type: String, required: true, lowercase: true, trim: true },
             'to': { type: String, required: true, trim: true },
-            'amount': { type: String, required: true,enum:['Org1','Org2']},
+            'amount': { type: String, required: true},
             'txId': { type: String, required: true}
 
     },{

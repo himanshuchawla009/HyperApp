@@ -972,16 +972,12 @@ dao.mintTokens = async(req,res,next)=>{
         let result = await invoke.invokeChaincode(peers, channelName, chaincodeName, fcn, args, username, orgName);
 
         let txId = result.message.split('transaction ID:')[1];
-
-        let txGen = {
-            from: "Minted",
-            to:req.user.walletAddress,
-            amount: amount,
-            txId
-        }
         let txns = new Transactions();
-
-        await txns.save({txGen});
+        txns.from = 'MINTED',
+        txns.to= req.user.walletAddress,
+        txns.amount = amount,
+        txns.txId =txId
+        await txns.save();
         
         res.status(200).json(result)
 
@@ -1040,15 +1036,15 @@ dao.exchangeTransaction = async(req,res,next)=>{
 
         let txId = result.message.split('transaction ID:')[1];
 
-        let txGen = {
-            to: address,
-            from:req.user.walletAddress,
-            amount: amount,
-            txId
-        }
         let txns = new Transactions();
+        txns.from = req.user.walletAddress,
+        txns.to= address,
+        txns.amount = amount,
+        txns.txId =txId
+        await txns.save();
+        
+       
 
-        await txns.save({txGen});
         res.status(200).json(result)
 
     } catch (error) {
