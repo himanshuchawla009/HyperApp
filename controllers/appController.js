@@ -811,18 +811,20 @@ dao.sendPayment = async(req,res,next)=>{
 
         let txId = result.message.split('transaction ID:')[1];
 
-        let txGen = {
-            from: req.user.walletAddress,
-            to:toAddress,
-            amount: amount,
-            txId
-        }
-
+      
         let txns = new Transactions();
-        await txns.save({txGen});
+        txns.from =req.user.walletAddress,
+        txns.to= toAddress,
+        txns.amount = amount,
+        txns.txId =txId
+        await txns.save();
         res.status(200).json(result)
     } catch (error) {
-        throw error;
+        res.status(500).json({
+            success:false,
+            message:error
+        })
+
     }
 }
 
