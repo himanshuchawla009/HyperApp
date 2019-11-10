@@ -1423,7 +1423,8 @@ dao.getPurchaseRequests = async (req, res, next) => {
         } else {
 
 
-            let requests = await getPurchaseRequests({ from: req.user.walletAddress },
+            let requests = await getPurchaseRequests(
+                params = { from: req.user.walletAddress },
                 sort = { createdAt: -1 },
                 skip = skip,
                 limit = limit,
