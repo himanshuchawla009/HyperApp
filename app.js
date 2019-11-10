@@ -576,6 +576,13 @@ authenticate,controller.getTxHistory)
 app.get('/users',
 authenticate,controller.getAllUsersWithWallet)
 
+app.post('/user/createPurchaseRequest',
+authenticate,controller.createPurchaseRequest)
+
+app.get('/user/getPurchaseRequests',
+authenticate,controller.getPurchaseRequests)
+
+
 
 // //loading default user from org
 // app.post('/admin/org/loadUser',

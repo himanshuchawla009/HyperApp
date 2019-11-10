@@ -5,6 +5,9 @@ var express = require('express');
 var configModel = require('../models/configuration');
 var appConfig = require('../appConfig');
 const User = require('../models/user');
+const Transactions = require('../models/transactions');
+const Requests = require('../models/purchaseRequests');
+
 var app = express();
 var jwt = require('jsonwebtoken');
 var fs = require('fs');
@@ -39,6 +42,54 @@ function getErrorMessage(field) {
     return response;
 }
 
+fetchTransactions =(params = {},
+    sort = { created_at:-1},
+    skip = 0,
+    limit = 0,
+    selector = '',
+    query = '',
+    cb = () => { }) => {
+        return new Promise((resolve, reject) => {
+            Transactions.find(params, (err, data) => {
+              if (!err) {
+                resolve(data);
+                return cb(err, data);
+              } else {
+                reject(err);
+                return cb(err, false);
+              }
+            })
+              .sort(sort)
+              .select(selector)
+              .populate(query)
+              .skip(skip)
+              .limit(limit);
+          });
+}
+getPurchaseRequests =(params = {},
+    sort = { created_at:-1},
+    skip = 0,
+    limit = 0,
+    selector = '',
+    query = '',
+    cb = () => { }) => {
+        return new Promise((resolve, reject) => {
+            Requests.find(params, (err, data) => {
+              if (!err) {
+                resolve(data);
+                return cb(err, data);
+              } else {
+                reject(err);
+                return cb(err, false);
+              }
+            })
+              .sort(sort)
+              .select(selector)
+              .populate(query)
+              .skip(skip)
+              .limit(limit);
+          });
+}
 
 dao.userSignup = async (req, res, next) => {
     try {
@@ -103,7 +154,9 @@ dao.userLogin = async (req, res, next) => {
             res.status(200).json({
                 success: true,
                 status: 200,
-                authToken: req.token
+                authToken: req.token,
+                wallet: req.user.walletAddress,
+                wallet:req.user.wallet
             });
         }
     } catch (error) {
@@ -131,7 +184,9 @@ dao.adminLogin = async (req, res, next) => {
                 res.status(200).json({
                     success: true,
                     status: 200,
-                    authToken: req.token
+                    authToken: req.token,
+                    wallet: req.user.walletAddress,
+                    wallet:req.user.wallet
                 });
             } else {
 
@@ -753,6 +808,17 @@ dao.sendPayment = async(req,res,next)=>{
         // if(result.success) {
         //     let existingUser = await User.findOneAndUpdate({_id:req.user._id},{wallet:true,walletAddress:address,cipherString:cipherString});
         // }
+
+        let txId = result.message.split('transaction ID:')[1];
+
+        let tx = {
+            from: req.user.walletAddress,
+            to:toAddress,
+            amount: amount,
+            txId
+        }
+
+        await Transactions.save(tx);
         res.status(200).json(result)
     } catch (error) {
         throw error;
@@ -902,6 +968,16 @@ dao.mintTokens = async(req,res,next)=>{
 
         let result = await invoke.invokeChaincode(peers, channelName, chaincodeName, fcn, args, username, orgName);
 
+        let txId = result.message.split('transaction ID:')[1];
+
+        let tx = {
+            from: "Minted",
+            to:req.user.walletAddress,
+            amount: amount,
+            txId
+        }
+
+        await Transactions.save(tx);
         
         res.status(200).json(result)
 
@@ -956,7 +1032,18 @@ dao.exchangeTransaction = async(req,res,next)=>{
 
         let result = await invoke.invokeChaincode(peers, channelName, chaincodeName, fcn, args, username, orgName);
 
-        
+        //message split point: transaction ID:
+
+        let txId = result.message.split('transaction ID:')[1];
+
+        let tx = {
+            to: address,
+            from:req.user.walletAddress,
+            amount: amount,
+            txId
+        }
+
+        await Transactions.save(tx);
         res.status(200).json(result)
 
     } catch (error) {
@@ -1043,48 +1130,100 @@ dao.getBalance = async (req, res, next) => {
 
 dao.getTxHistory = async (req, res, next) => {
     try {
-        logger.debug('==================== QUERY BY CHAINCODE ==================');
-        var peer = "peer0.org1.example.com";
-        var chaincodeName = appConfig.chaincodeName;
-        var channelName = appConfig.channelName;
-        var fcn = 'History';
-        var args = [req.user.walletAddress];
-        var username = appConfig.org1User;
-        var orgName = appConfig.org1Name;
+    
+        let source = !!req.query.source ? req.query.source : "db";
 
-        logger.debug('channelName : ' + channelName);
-        logger.debug('chaincodeName : ' + chaincodeName);
-        logger.debug('fcn : ' + fcn);
-        logger.debug('args : ' + args);
+        let limit = !!req.query.limit ? req.query.limit :10;
 
-        if (!chaincodeName) {
-            res.json(getErrorMessage('\'chaincodeName\''));
-            return;
+        let page = !!req.query.page ? req.query.page : 1;
+        let skip = (page -1 ) * limit;
+        if(source === 'blockchain') {
+            logger.debug('==================== QUERY BY CHAINCODE ==================');
+            var peer = "peer0.org1.example.com";
+            var chaincodeName = appConfig.chaincodeName;
+            var channelName = appConfig.channelName;
+            var fcn = 'History';
+            var args = [req.user.walletAddress];
+            var username = appConfig.org1User;
+            var orgName = appConfig.org1Name;
+    
+            logger.debug('channelName : ' + channelName);
+            logger.debug('chaincodeName : ' + chaincodeName);
+            logger.debug('fcn : ' + fcn);
+            logger.debug('args : ' + args);
+    
+            if (!chaincodeName) {
+                res.json(getErrorMessage('\'chaincodeName\''));
+                return;
+            }
+            if (!channelName) {
+                res.json(getErrorMessage('\'channelName\''));
+                return;
+            }
+            if (!fcn) {
+                res.json(getErrorMessage('\'fcn\''));
+                return;
+            }
+            if (!args) {
+                res.json(getErrorMessage('\'args\''));
+                return;
+            }
+          
+            let result = await query.queryChaincode(peer, channelName, chaincodeName, args, fcn, username, orgName);
+            
+            let beginIndex= result.indexOf('[');
+            let endIndex = result.indexOf(']');
+            let subResult= result.substring(beginIndex,endIndex+1)
+            let exceptNewLine = subResult.replace(/\r?\n|\r/g, "")
+            let exceptSlash = exceptNewLine.replace(/\\\//g, "/");
+            res.status(200).json({
+                success:true,
+                data:JSON.parse(exceptSlash)
+            })
+        } else {
+
+            if(req.user.loginType === 'admin') {
+
+                let txType = !!req.query.txType ? req.query.txType : "my";
+
+                if(txType === 'all') {
+
+                   let transactions = await fetchTransactions(
+                    params = {},
+                    sort = { createdAt:-1},
+                    skip = skip,
+                    limit = limit,
+                    selector = '',
+                    query = ''
+                    )
+
+                    return res.status(200).json({
+                        data: transactions
+                    })
+
+                } else {
+                    let transactions = await fetchTransactions(params = { 
+                        $or:{
+                            from: req.user.walletAddress,
+                            to: req.user.walletAddress
+                        }
+                    },
+                        sort = { createdAt:-1},
+                        skip = skip,
+                        limit = limit,
+                        selector = '',
+                        query = '',)
+    
+                        return res.status(200).json({
+                            data: transactions
+                        })
+                }
+
+            } else {
+
+            }
+
         }
-        if (!channelName) {
-            res.json(getErrorMessage('\'channelName\''));
-            return;
-        }
-        if (!fcn) {
-            res.json(getErrorMessage('\'fcn\''));
-            return;
-        }
-        if (!args) {
-            res.json(getErrorMessage('\'args\''));
-            return;
-        }
-      
-        let result = await query.queryChaincode(peer, channelName, chaincodeName, args, fcn, username, orgName);
-        
-        let beginIndex= result.indexOf('[');
-        let endIndex = result.indexOf(']');
-        let subResult= result.substring(beginIndex,endIndex+1)
-        let exceptNewLine = subResult.replace(/\r?\n|\r/g, "")
-        let exceptSlash = exceptNewLine.replace(/\\\//g, "/");
-        res.status(200).json({
-            success:true,
-            data:JSON.parse(exceptSlash)
-        })
     } catch (error) {
         res.status(200).json({
             success: false,
@@ -1136,11 +1275,132 @@ dao.getUserBalance = async (req, res, next) => {
             balance:messageArray[3]
         })
     } catch (error) {
-        res.status(200).json({
+        res.status(400).json({
             success: false,
             message: error
         });
     }
+
+dao.createPurchaseRequest = async (req, res, next) => {
+    try {
+
+        if(!!req.body.amount) {
+            let req = {
+                from: req.user.walletAddress,
+                amount: req.body.amount
+            }
+            await Requests.save(req);
+
+            res.status(200).json({
+                success: true,
+                message: "Successfully submitted your purchase request"
+            });
+
+        } else {
+            res.status(400).json({
+                success: false,
+                message: "Please send purchase amount"
+            });
+        }
+       
+
+
+    }
+    catch(err) {
+        res.status(400).json({
+            success: false,
+            message:err
+        });
+    }
 }
+
+
+
+dao.updatePurchaseRequest = async (req, res, next) => {
+    try {
+
+        if(!!req.body.amount) {
+            let req = {
+                from: req.user.walletAddress,
+                amount: req.body.amount
+            }
+            await Requests.save(req);
+
+            res.status(200).json({
+                success: true,
+                message: "Successfully submitted your purchase request"
+            });
+
+        } else {
+            res.status(400).json({
+                success: false,
+                message: "Please send purchase amount"
+            });
+        }
+       
+
+
+    }
+    catch(err) {
+        res.status(400).json({
+            success: false,
+            message:err
+        });
+    }
+}
+
+
+
+dao.getPurchaseRequests = async (req, res, next) => {
+    try {
+
+        let limit = !!req.query.limit ? req.query.limit :10;
+
+        let page = !!req.query.page ? req.query.page : 1;
+        let skip = (page -1 ) * limit;
+        if(req.user.loginType === 'admin') {
+            
+            let requests = await getPurchaseRequests( params = {},
+                sort = { createdAt:-1},
+                skip = skip,
+                limit = limit,
+                selector = '',
+                query = '')
+
+            res.status(200).json({
+                success: true,
+                data: requests
+            });
+
+        } else {
+
+             
+            let requests = await getPurchaseRequests( { from : req.user.walletAddress},
+                sort = { createdAt:-1},
+                skip = skip,
+                limit = limit,
+                selector = '',
+                query = '')
+
+
+            res.status(200).json({
+                success: true,
+                data: requests
+            });
+        }
+       
+
+
+    }
+    catch(err) {
+        res.status(400).json({
+            success: false,
+            message:err
+        });
+    }
+}
+}
+
+
 
 module.exports = dao;
