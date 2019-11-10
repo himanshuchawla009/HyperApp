@@ -818,7 +818,8 @@ dao.sendPayment = async(req,res,next)=>{
             txId
         }
 
-        await Transactions.save(txGen);
+        let txns = new Transactions();
+        await txns.save(txGen);
         res.status(200).json(result)
     } catch (error) {
         throw error;
@@ -976,8 +977,9 @@ dao.mintTokens = async(req,res,next)=>{
             amount: amount,
             txId
         }
+        let txns = new Transactions();
 
-        await Transactions.save(txGen);
+        await txns.save(txGen);
         
         res.status(200).json(result)
 
@@ -1042,8 +1044,9 @@ dao.exchangeTransaction = async(req,res,next)=>{
             amount: amount,
             txId
         }
+        let txns = new Transactions();
 
-        await Transactions.save(txGen);
+        await txns.save(txGen);
         res.status(200).json(result)
 
     } catch (error) {
@@ -1291,7 +1294,9 @@ dao.createPurchaseRequest = async (req, res, next) => {
                 from: req.user.walletAddress,
                 amount: req.body.amount
             }
-            await Requests.save(req);
+            let rquts = new Requests();
+
+            await rquts.save(req);
 
             return res.status(200).json({
                 success: true,
