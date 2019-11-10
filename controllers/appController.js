@@ -747,7 +747,10 @@ dao.createAccount = async (req, res, next) => {
         if (result.success) {
             let existingUser = await User.findOneAndUpdate({ _id: req.user._id }, { wallet: true, walletAddress: address, cipherString: cipherString });
         }
-        res.status(200).json(result)
+        res.status(200).json({
+            ...result,
+            walletAddress: address
+        })
 
     } catch (error) {
         res.status(200).json({
