@@ -156,7 +156,8 @@ dao.userLogin = async (req, res, next) => {
                 status: 200,
                 authToken: req.token,
                 walletAddress: req.user.walletAddress,
-                wallet: req.user.wallet
+                wallet: req.user.wallet,
+                email:req.user.email
             });
         }
     } catch (error) {
@@ -1115,6 +1116,8 @@ dao.getBalance = async (req, res, next) => {
         }
 
         let result = await query.queryChaincode(peer, channelName, chaincodeName, args, fcn, username, orgName);
+
+        console.log("balance result",result)
         let messageArray = result.split(' ');
 
 
