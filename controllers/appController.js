@@ -1111,7 +1111,7 @@ dao.getAllUsersWithWallet = async (req, res, next) => {
         )
 
         console.log(users,"users");
-        let count = await User.count({})
+        let count = await User.count({ wallet: true, _id: { $ne: req.user._id }})
         return res.status(200).json({
             success:true,
             data: users,
