@@ -66,6 +66,30 @@ fetchTransactions = (params = {},
             .limit(limit);
     });
 }
+fetchUsers = (params = {},
+    sort = { created_at: -1 },
+    skip = 0,
+    limit = 0,
+    selector = '',
+    query = '',
+    cb = () => { }) => {
+    return new Promise((resolve, reject) => {
+        user.find(params, (err, data) => {
+            if (!err) {
+                resolve(data);
+                return cb(err, data);
+            } else {
+                reject(err);
+                return cb(err, false);
+            }
+        })
+            .sort(sort)
+            .select(selector)
+            .populate(query)
+            .skip(skip)
+            .limit(limit);
+    });
+}
 getPurchaseRequests = (params = {},
     sort = { created_at: -1 },
     skip = 0,
@@ -1072,13 +1096,34 @@ dao.getUserDetails = async (req, res, next) => {
 
 dao.getAllUsersWithWallet = async (req, res, next) => {
     try {
-        let users = await User.find({ wallet: true, _id: { $ne: req.user._id } });
-        res.json({
-            success: true,
-            data: users
+        let limit = !!req.query.limit ? req.query.limit : 10;
+
+        let page = !!req.query.page ? req.query.page : 1;
+
+        let users = await fetchUsers(
+            params = { wallet: true, _id: { $ne: req.user._id }},
+            sort = { createdAt: -1 },
+            skip = skip,
+            limit = limit,
+            selector = '',
+            query = ''
+        )
+
+        let count = await User.count({})
+        return res.status(200).json({
+            success:true,
+            data: users,
+            next: (page * limit <= count) ? true : false
+
         })
+
+      
     } catch (error) {
-        throw error;
+        return res.status(400).json({
+            success:false,
+            message: error
+
+        })
     }
 }
 
