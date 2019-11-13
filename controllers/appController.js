@@ -74,7 +74,7 @@ fetchUsers = (params = {},
     query = '',
     cb = () => { }) => {
     return new Promise((resolve, reject) => {
-        user.find(params, (err, data) => {
+        User.find(params, (err, data) => {
             if (!err) {
                 resolve(data);
                 return cb(err, data);
