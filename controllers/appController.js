@@ -1100,6 +1100,7 @@ dao.getAllUsersWithWallet = async (req, res, next) => {
 
         let page = !!req.query.page ? req.query.page : 1;
 
+        let skip = (page - 1) * limit;
         let users = await fetchUsers(
             params = { wallet: true, _id: { $ne: req.user._id }},
             sort = { createdAt: -1 },
