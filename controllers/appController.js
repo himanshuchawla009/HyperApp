@@ -33,6 +33,30 @@ const wallet = require('./wallet');
 
 const dao = {};
 
+var request = require('request');
+
+async function httpRequest(url) {
+    // Setting URL and headers for request
+    var options = {
+        url: url,
+        headers: {
+            'User-Agent': 'request'
+        }
+    };
+    // Return new promise
+    return new Promise(function (resolve, reject) {
+        // Do async job
+        request.get(options, function (err, resp, body) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(JSON.parse(body));
+            }
+        });
+    });
+}
+
+
 
 function getErrorMessage(field) {
     var response = {
@@ -181,7 +205,7 @@ dao.userLogin = async (req, res, next) => {
                 authToken: req.token,
                 walletAddress: req.user.walletAddress,
                 wallet: req.user.wallet,
-                email:req.user.email
+                email: req.user.email
             });
         }
     } catch (error) {
@@ -982,7 +1006,7 @@ dao.mintTokens = async (req, res, next) => {
 
 
 
-        let json_hash = wallet.mintTx(amount);
+        let json_hash =await httpRequest(`localhost:3000/mintCoins?amount=${amount}`);
         console.log("json_has", json_hash)
         let trimmedHash = json_hash.replace(/\r?\n|\r/g, " ");
         let args = [trimmedHash.trim()];
@@ -1102,7 +1126,7 @@ dao.getAllUsersWithWallet = async (req, res, next) => {
 
         let skip = (page - 1) * limit;
         let users = await fetchUsers(
-            params = { wallet: true, _id: { $ne: req.user._id }},
+            params = { wallet: true, _id: { $ne: req.user._id } },
             sort = { createdAt: -1 },
             skip = skip,
             limit = limit,
@@ -1110,20 +1134,20 @@ dao.getAllUsersWithWallet = async (req, res, next) => {
             query = ''
         )
 
-        console.log(users,"users");
-        let count = await User.count({ wallet: true, _id: { $ne: req.user._id }})
+        console.log(users, "users");
+        let count = await User.count({ wallet: true, _id: { $ne: req.user._id } })
         return res.status(200).json({
-            success:true,
+            success: true,
             data: users,
             next: (page * limit <= count) ? true : false
 
         })
 
-      
+
     } catch (error) {
         console.log("error", error);
         return res.status(400).json({
-            success:false,
+            success: false,
             message: error
 
         })
@@ -1165,7 +1189,7 @@ dao.getBalance = async (req, res, next) => {
 
         let result = await query.queryChaincode(peer, channelName, chaincodeName, args, fcn, username, orgName);
 
-        console.log("balance result",result)
+        console.log("balance result", result)
         let messageArray = result.split(' ');
 
 
@@ -1298,10 +1322,12 @@ dao.getTxHistory = async (req, res, next) => {
                     limit = limit,
                     selector = '',
                     query = '')
-                    let count = await Transactions.count({ $or: [
+                let count = await Transactions.count({
+                    $or: [
                         { from: req.user.walletAddress },
                         { to: req.user.walletAddress }
-                    ]})
+                    ]
+                })
 
                 return res.status(200).json({
                     data: transactions,
@@ -1414,7 +1440,7 @@ dao.updatePurchaseRequest = async (req, res, next) => {
 
             if (req.body.status === 'rejected' || (req.body.status === 'accepted')) {
 
-                await Requests.findOneAndUpdate({_id:requestId},{status:req.body.status})
+                await Requests.findOneAndUpdate({ _id: requestId }, { status: req.body.status })
 
             } else {
                 return res.status(400).json({
