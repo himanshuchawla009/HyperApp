@@ -1109,6 +1109,7 @@ dao.getAllUsersWithWallet = async (req, res, next) => {
             query = ''
         )
 
+        console.log(users,"users");
         let count = await User.count({})
         return res.status(200).json({
             success:true,
@@ -1119,6 +1120,7 @@ dao.getAllUsersWithWallet = async (req, res, next) => {
 
       
     } catch (error) {
+        console.log("error", error);
         return res.status(400).json({
             success:false,
             message: error
