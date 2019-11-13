@@ -1214,8 +1214,8 @@ dao.getTxHistory = async (req, res, next) => {
                 } else {
                     let transactions = await fetchTransactions(params = {
                         $or: [
-                            { from: req.user.walletAddress },
-                            { to: req.user.walletAddress }
+                            { from: req.query.walletAddress },
+                            { to: req.query.walletAddress }
                         ]
                     },
                         sort = { createdAt: -1 },
@@ -1226,8 +1226,8 @@ dao.getTxHistory = async (req, res, next) => {
 
                     let count = await Transactions.count({
                         $or: [
-                            { from: req.user.walletAddress },
-                            { to: req.user.walletAddress }
+                            { from: req.query.walletAddress },
+                            { to: req.query.walletAddress }
                         ]
                     })
 
