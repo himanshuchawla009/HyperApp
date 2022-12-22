@@ -33,7 +33,7 @@
     "fabric-client": "~1.4.0",
     "fs-extra": "^2.0.0",
     "js-crypto-key-utils": "^0.6.5",
-    "jsonwebtoken": "^7.4.3",
+    "jsonwebtoken": "^9.0.0",
     "key-encoder": "^1.1.6",
     "log4js": "^0.6.38",
     "md5": "^2.2.1",
